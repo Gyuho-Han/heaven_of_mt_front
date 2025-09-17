@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import Splash from './pages/Splash';
+import Home from './pages/Home';
+import ReadyPage from './pages/ReadyPage';
+import PersonGamePage from './pages/PersonGamePage';
+import DiscoGamePage from './pages/DiscoGamePage';
+import CaptainGamePage from './pages/CaptainGamePage';
+import FourGamePage from './pages/FourGamePage';
+import TeleGamePage from './pages/TeleGamePage';
+import TelestrationGamePage from './pages/TelestrationGamePage';
+import ChoiGamePage from './pages/ChoiGamePage';
+import CategoryPage from './pages/CategoryPage';
+import MusicTitleGamePage from './pages/MusicTitleGamePage';
+import MovieGamePage from './pages/MovieGamePage';
+import GameOver from './pages/GameOver';
+import Church from './pages/Church';
+import ChurchDiscoGamePage from './pages/ChurchDiscoGamePage';
+import ChurchCaptainGamePage from './pages/ChurchCaptainGamePage';
+import ChurchFourGamePage from './pages/ChurchFourGamePage';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Prevent page scrolling when using arrow keys or spacebar during gameplay
+  useEffect(() => {
+    const preventScrollKeys = (e) => {
+      const keysToBlock = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Spacebar'];
+      if (keysToBlock.includes(e.key)) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', preventScrollKeys);
+    return () => window.removeEventListener('keydown', preventScrollKeys);
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Splash />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/ready" element={<ReadyPage />} />
+        <Route path="/person" element={<PersonGamePage />} />
+        <Route path="/disco" element={<DiscoGamePage />} />
+        <Route path="/captain" element={<CaptainGamePage />} />
+        <Route path="/four" element={<FourGamePage />} />
+        <Route path="/tele" element={<TeleGamePage />} />
+        <Route path="/telestration" element={<TelestrationGamePage />} />
+        <Route path="/choi" element={<ChoiGamePage />} />
+        <Route path="/category" element={<CategoryPage />} />
+        <Route path="/musictitle" element={<MusicTitleGamePage />} />
+        <Route path="/movie" element={<MovieGamePage />} />
+        <Route path="/church" element={<Church />} />
+        <Route path="/church_disco" element={<ChurchDiscoGamePage />} />
+        <Route path="/church_captain" element={<ChurchCaptainGamePage />} />
+        <Route path="/church_four" element={<ChurchFourGamePage />} />
+        <Route path="/gameover" element={<GameOver />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
