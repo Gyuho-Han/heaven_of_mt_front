@@ -121,7 +121,7 @@ const NavButton = styled.button`
   border: none;
   cursor: pointer;
   padding: 0;
-  img { width: 7vw; }
+  img { width: 5vw; }
   &:disabled { cursor: default; opacity: 0.5; }
 `;
 

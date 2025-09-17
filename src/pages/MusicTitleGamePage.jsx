@@ -208,7 +208,7 @@ const NavButton = styled.button`
   cursor: pointer;
   padding: 0;
   img {
-    width: 7vw;
+    width: 5vw;
   }
   &:disabled {
     cursor: default;

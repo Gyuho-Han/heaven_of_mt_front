@@ -170,7 +170,7 @@ const NavButton = styled.button`
   cursor: pointer;
   padding: 0;
   img {
-    width: 7vw;
+    width: 5vw;
   }
   &:disabled {
     cursor: default;
@@ -186,6 +186,7 @@ const CardContainer = styled.div`
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 20px;
+  overflow: hidden;
 `;
 
 const Card = styled.div`
@@ -197,9 +198,10 @@ const Card = styled.div`
 `;
 
 const CardImage = styled.img`
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  display: block;
 `;
 
 const AnswerText = styled.p`

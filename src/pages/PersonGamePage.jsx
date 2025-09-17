@@ -128,7 +128,7 @@ export default PersonGamePage;
 
 const Container = styled.div`
   background-image: url('/images/background_final.png');
-  background-size: cover;
+  background-size: contain;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -172,7 +172,7 @@ const NavButton = styled.button`
   cursor: pointer;
   padding: 0;
   img {
-    width: 7vw;
+    width: 5vw;
   }
   &:disabled {
     cursor: default;
@@ -189,9 +189,10 @@ const CardContainer = styled.div`
 `;
 
 const Card = styled.img`
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  display: block;
 `;
 
 const AnswerContainer = styled.div`
@@ -199,7 +200,7 @@ const AnswerContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
+`;  
 
 const AnswerButton = styled.button`
   width: 19.5vw;

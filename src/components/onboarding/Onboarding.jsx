@@ -32,19 +32,24 @@ export default Onboarding;
 
 const Container = styled.div`
   width: 43vw;
-  height: 80.6vh;
+  max-height: 76vh;
   background-image: url('/images/back_image.png');
-  background-size: fill;
+  background-size: cover;
+  background-position: center;
   padding: 4.3vh 2.8vw;
   display: flex;
   flex-direction: column;
+  overflow: auto;
+  box-sizing: border-box;
+  border-radius: 16px;
 `;
 
 const Image = styled.img`
   width: 22.2vw;
   height: 22.2vh;
   border-radius: 16px;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: rgba(0, 0, 0, 0.5);
 `;
 
 const InfoContainer = styled.div`
