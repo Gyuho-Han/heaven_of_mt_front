@@ -14,10 +14,6 @@ import CategoryPage from './pages/CategoryPage';
 import MusicTitleGamePage from './pages/MusicTitleGamePage';
 import MovieGamePage from './pages/MovieGamePage';
 import GameOver from './pages/GameOver';
-import Church from './pages/Church';
-import ChurchDiscoGamePage from './pages/ChurchDiscoGamePage';
-import ChurchCaptainGamePage from './pages/ChurchCaptainGamePage';
-import ChurchFourGamePage from './pages/ChurchFourGamePage';
 
 function App() {
   // Prevent page scrolling when using arrow keys or spacebar during gameplay
@@ -48,10 +44,6 @@ function App() {
         <Route path="/category" element={<CategoryPage />} />
         <Route path="/musictitle" element={<MusicTitleGamePage />} />
         <Route path="/movie" element={<MovieGamePage />} />
-        <Route path="/church" element={<Church />} />
-        <Route path="/church_disco" element={<ChurchDiscoGamePage />} />
-        <Route path="/church_captain" element={<ChurchCaptainGamePage />} />
-        <Route path="/church_four" element={<ChurchFourGamePage />} />
         <Route path="/gameover" element={<GameOver />} />
       </Routes>
     </Router>

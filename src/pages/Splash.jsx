@@ -49,7 +49,9 @@ const Splash = () => {
   return (
     <Container onKeyDown={handleKeyPress} tabIndex="0" ref={focusRef}>
       <Content>
+        <TopSpacer />
         <TitleImage src="/images/title.png" alt="title" />
+        <BottomSpacer />
         <ButtonContainer>
           <AnimatedImage
             src="/images/splash_left.png"
@@ -79,7 +81,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   outline: none;
 `;
 
@@ -89,10 +91,17 @@ const Content = styled.div`
   align-items: center;
 `;
 
+const TopSpacer = styled.div`
+  height: 18vh;
+`;
+
 const TitleImage = styled.img`
   width: 75vw;
   height: 19vh;
-  margin-bottom: 35vh;
+`;
+
+const BottomSpacer = styled.div`
+  height: 35vh;
 `;
 
 const ButtonContainer = styled.div`
