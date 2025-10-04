@@ -5,17 +5,23 @@ import styled from 'styled-components';
 const Onboarding = ({ image, recommendedPeople, difficulty, instructions }) => {
   return (
     <Container>
-      <Image src={image} alt="onboarding" />
-      <InfoContainer>
-        <Info>
-          <Title>권장인원:</Title>
-          <Value>{recommendedPeople}</Value>
-        </Info>
-        <Info>
-          <Title>난이도:</Title>
-          <Value>{difficulty}</Value>
-        </Info>
-      </InfoContainer>
+      <TopRow>
+        <Image src={image} alt="onboarding" />
+        <Meta>
+          <SpacerSmall />
+          <MetaBlock>
+            <Title>권장인원:</Title>
+            <MetaGapSmall />
+            <Value>{recommendedPeople}</Value>
+          </MetaBlock>
+          <MetaGapLarge />
+          <MetaBlock>
+            <Title>난이도:</Title>
+            <MetaGapSmall />
+            <Value>{difficulty}</Value>
+          </MetaBlock>
+        </Meta>
+      </TopRow>
       <InstructionsContainer>
         {instructions.map((instruction, index) => (
           <Instruction key={index}>
@@ -32,35 +38,52 @@ export default Onboarding;
 
 const Container = styled.div`
   width: 43vw;
-  max-height: 76vh;
+  height: 80.6vh;
   background-image: url('/images/back_image.png');
-  background-size: cover;
+  background-size: 100% 100%;
   background-position: center;
-  padding: 4.3vh 2.8vw;
+  padding-top: 4.3vh;
+  padding-left: 2.8vw;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow: hidden;
   box-sizing: border-box;
   border-radius: 16px;
+`;
+
+const TopRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 2.734vw; /* 35/1280 of width */
 `;
 
 const Image = styled.img`
   width: 22.2vw;
   height: 22.2vh;
   border-radius: 16px;
-  object-fit: contain;
-  background-color: rgba(0, 0, 0, 0.5);
+  object-fit: fill;
 `;
 
-const InfoContainer = styled.div`
-  display: flex;
-  margin-top: 1.9vh;
-`;
-
-const Info = styled.div`
+const Meta = styled.div`
   display: flex;
   flex-direction: column;
-  margin-right: 35px;
+`;
+
+const SpacerSmall = styled.div`
+  height: 1.9vh;
+`;
+
+const MetaBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const MetaGapSmall = styled.div`
+  height: 1vh;
+`;
+
+const MetaGapLarge = styled.div`
+  height: 3.7vh;
 `;
 
 const Title = styled.p`
@@ -82,6 +105,8 @@ const Value = styled.p`
 
 const InstructionsContainer = styled.div`
   margin-top: 2.99vh;
+  overflow: auto;
+  padding-right: 2vw;
 `;
 
 const Instruction = styled.div`
