@@ -99,13 +99,13 @@ const PersonGamePage = () => {
         <div style={{ width: '48px' }} />
       </Header>
       <Content>
-        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0}>
+        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0} chevron="left">
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
           <Card src={cards[currentCardIndex].name} alt="person" />
         </CardContainer>
-        <NavButton onClick={handleNext}>
+        <NavButton onClick={handleNext} chevron="right">
           <img src="/images/icon_chevron_right.png" alt="next" />
         </NavButton>
       </Content>
@@ -142,14 +142,15 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7.1vh 7.5vw 0 7.5vw;
+  padding: 7.5vh 0 0 0;
 `;
 
 const ExitButton = styled.button`
+  width: 2.8vw;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0 0 0 7.5vw ;
   img {
     width: 3vw;
   }
@@ -158,6 +159,9 @@ const ExitButton = styled.button`
 const Counter = styled.div`
   font-family: 'DungGeunMo', sans-serif;
   font-size: 3.3vw;
+  position: absolute;
+  left: 50%; 
+  transform: translateX(-50%);\
 `;
 
 const Content = styled.div`
@@ -170,10 +174,15 @@ const NavButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  position: absolute;
+
   img {
-    width: 5vw;
+    height: 9.3vh;
   }
+    
+  ${(props) => props.chevron === 'left' && `left: 8vw;`}
+  ${(props) => props.chevron === 'right' && `right: 8vw;`}
+
   &:disabled {
     cursor: default;
     opacity: 0.5;
@@ -181,15 +190,14 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  width: 57vw;
-  height: 67vh;
+  height: 55vh;
   display: flex;
+padding: 6.1vh 0 0 0;
   align-items: center;
   justify-content: center;
 `;
 
 const Card = styled.img`
-  width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
@@ -200,7 +208,8 @@ const AnswerContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;  
+  padding: 5.1vh 0 0 0;
+`;
 
 const AnswerButton = styled.button`
   width: 19.5vw;
