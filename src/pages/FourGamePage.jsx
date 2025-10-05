@@ -77,13 +77,13 @@ const FourGamePage = () => {
         <div style={{ width: '48px' }} />
       </Header>
       <Content>
-        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0}>
+        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0} chevron="left">
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
           <Card>{cards[currentCardIndex].name}</Card>
         </CardContainer>
-        <NavButton onClick={handleNext}>
+        <NavButton onClick={handleNext} chevron="right">
           <img src="/images/icon_chevron_right.png" alt="next" />
         </NavButton>
       </Content>
@@ -142,10 +142,15 @@ const NavButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  position: absolute;
+
   img {
-    width: 5vw;
+    height: 9.3vh;
   }
+    
+  ${(props) => props.chevron === 'left' && `left: 8vw;`}
+  ${(props) => props.chevron === 'right' && `right: 8vw;`}
+
   &:disabled {
     cursor: default;
     opacity: 0.5;
