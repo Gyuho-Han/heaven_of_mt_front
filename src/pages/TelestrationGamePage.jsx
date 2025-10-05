@@ -137,14 +137,15 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7.1vh 7.5vw 0 7.5vw;
+  padding: 7.5vh 0 0 0;
 `;
 
 const ExitButton = styled.button`
+  width: 2.8vw;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0 0 0 7.5vw ;
   img {
     width: 3vw;
   }
@@ -153,6 +154,9 @@ const ExitButton = styled.button`
 const Counter = styled.div`
   font-family: 'DungGeunMo', sans-serif;
   font-size: 3.3vw;
+  position: absolute;
+  left: 50%; 
+  transform: translateX(-50%);
 `;
 
 const Content = styled.div`

@@ -161,7 +161,7 @@ const Counter = styled.div`
   font-size: 3.3vw;
   position: absolute;
   left: 50%; 
-  transform: translateX(-50%);\
+  transform: translateX(-50%);
 `;
 
 const Content = styled.div`
