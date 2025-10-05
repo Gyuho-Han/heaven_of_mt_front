@@ -130,18 +130,21 @@ const Content = styled.div`
 
 const CategoryRow = styled.div`
   display: flex;
-  margin-left: 8.5vw;
+  gap: 3.6vw; 
 `;
 
 const CategoryButton = styled.div`
   position: relative;
   width: 19vw;
   height: 56vh;
-  margin-right: 2.4vw;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
 `;
 
 const CategoryImg = styled.img`

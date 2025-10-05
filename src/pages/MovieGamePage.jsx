@@ -102,7 +102,7 @@ const MovieGamePage = () => {
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
-          <Card>
+          <Card isAnswered={isAnswered}>
             {isAnswered ? (
               <AnswerText>{cards[currentCardIndex].answer}</AnswerText>
             ) : (
@@ -165,7 +165,6 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
 `;
 
 const NavButton = styled.button`
@@ -173,6 +172,8 @@ const NavButton = styled.button`
   border: none;
   cursor: pointer;
   position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
 
   img {
     height: 9.3vh;
@@ -188,32 +189,28 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  width: 70vw;
-  height: 67vh;
+  height: 54.1vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
-  overflow: hidden;
+  padding: ${(props) => (props.isAnswered ? '30vh 0 0 0' : '6.1vh 0 0 0')};
 `;
 
 const Card = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: 100%;
 `;
 
 const CardImage = styled.img`
-  width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
 `;
 
 const AnswerText = styled.p`
+  height: 12.9vh;
   font-family: 'DungGeunMo', sans-serif;
   font-size: 6vw;
   color: #ff62d3;
@@ -222,7 +219,7 @@ const AnswerText = styled.p`
 `;
 
 const AnswerButton = styled.button`
-  width: 17.3vw;
+  width: 19.5vw;
   height: 8.5vh;
   background-color: ${(props) => (props.isAnswered ? 'white' : '#ff62d3')};
   border: none;
@@ -231,5 +228,5 @@ const AnswerButton = styled.button`
   font-size: 3vw;
   color: black;
   cursor: pointer;
-  margin-bottom: 3.8vh;
+  margin-top: 5.1vh;
 `;

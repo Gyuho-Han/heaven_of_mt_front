@@ -175,6 +175,8 @@ const NavButton = styled.button`
   border: none;
   cursor: pointer;
   position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
 
   img {
     height: 9.3vh;
@@ -192,7 +194,7 @@ const NavButton = styled.button`
 const CardContainer = styled.div`
   height: 55vh;
   display: flex;
-padding: 6.1vh 0 0 0;
+  padding: 6.1vh 0 0 0;
   align-items: center;
   justify-content: center;
 `;

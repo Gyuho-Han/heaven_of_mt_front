@@ -102,7 +102,7 @@ const TelestrationGamePage = () => {
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
-          <Card>
+          <Card isAnswered={isAnswered}>
             {isAnswered
               ? '게임 진행 중 ...'
               : cards[currentCardIndex].name}
@@ -163,7 +163,6 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
 `;
 
 const NavButton = styled.button`
@@ -171,6 +170,8 @@ const NavButton = styled.button`
   border: none;
   cursor: pointer;
   position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
 
   img {
     height: 9.3vh;
@@ -187,24 +188,23 @@ const NavButton = styled.button`
 
 const CardContainer = styled.div`
   width: 70vw;
-  height: 40vh;
+  height: 18.7vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
+  padding: 27vh 0 0 0;
 `;
 
 const Card = styled.div`
   font-family: 'DungGeunMo', sans-serif;
-  font-size: 11vw;
-  color: white;
+  font-size: ${(props) => (props.isAnswered ? '8vw' : '11vw')};
+  color: ${(props) => (props.isAnswered ? '#ff62d3' : 'white')};
   white-space: pre-wrap;
   text-align: center;
 `;
 
 const AnswerButton = styled.button`
-  width: 17.3vw;
+  width: 19.5vw;
   height: 8.5vh;
   background-color: ${(props) => (props.isAnswered ? 'white' : '#ff62d3')};
   border: none;
@@ -213,5 +213,5 @@ const AnswerButton = styled.button`
   font-size: 3vw;
   color: black;
   cursor: pointer;
-  margin-bottom: 10vh;
+  margin-top: 19.5vh;
 `;

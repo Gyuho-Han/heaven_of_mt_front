@@ -148,7 +148,6 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
 `;
 
 const NavButton = styled.button`
@@ -156,6 +155,8 @@ const NavButton = styled.button`
   border: none;
   cursor: pointer;
   position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
 
   img {
     height: 9.3vh;
@@ -171,13 +172,12 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  width: 63vw;
-  height: 40vh;
+  width: 34.7vw;
+  height: 24.2vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
+  padding: 25.7vh 0 0 0;
 `;
 
 const Card = styled.div`

@@ -165,7 +165,6 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
 `;
 
 const NavButton = styled.button`
@@ -173,6 +172,8 @@ const NavButton = styled.button`
   border: none;
   cursor: pointer;
   position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
 
   img {
     height: 9.3vh;
@@ -188,13 +189,13 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  width: 70vw;
-  height: 40vh;
+  width: 65vw;
+  height: 25.9vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
+  padding: 23.4vh 0 0 0;
+
 `;
 
 const Card = styled.div`
@@ -206,8 +207,9 @@ const Card = styled.div`
 `;
 
 const AnswerButton = styled.button`
-  width: 17.3vw;
+  width: 19.5vw;
   height: 8.5vh;
+  margin-top: 16vh;
   background-color: ${(props) => (props.$isAnswered ? 'white' : '#ff62d3')};
   border: none;
   border-radius: 12px;
@@ -215,5 +217,4 @@ const AnswerButton = styled.button`
   font-size: 3vw;
   color: black;
   cursor: pointer;
-  margin-bottom: 10vh;
 `;
