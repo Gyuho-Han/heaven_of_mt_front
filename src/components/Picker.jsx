@@ -84,14 +84,16 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
           onClick={() => onSelect(index)}
         >
           {index === selectedIndex ? (
+            <>
+            <Arrows src="/images/left.png" alt="left" />
             <SelectedItemContainer onClick={(e) => {
               e.stopPropagation();
               if (onConfirmSelected) onConfirmSelected();
             }}>
-              <img src="/images/left.png" alt="left" />
               <SelectedText>{item.name}</SelectedText>
-              <img src="/images/right.png" alt="right" />
-            </SelectedItemContainer>
+              </SelectedItemContainer>
+              <Arrows src="/images/right.png" alt="right" />
+            </>
           ) : (
             <UnselectedText>{item.name}</UnselectedText>
           )}
@@ -132,12 +134,13 @@ const SelectedItemContainer = styled.div`
   justify-content: center;
   background-color: #ff62d3;
   width: 26.5vw;
-  img {
-    width: 24px;
-    height: 42px;
-    margin: 0 18px;
-  }
 `;
+
+const Arrows = styled.img`
+  width: 24px;
+  height: 42px;
+  margin: 0 15px;
+`
 
 const SelectedText = styled.p`
   font-family: 'DungGeunMo', sans-serif;
@@ -145,6 +148,7 @@ const SelectedText = styled.p`
   font-weight: 400;
   color: white;
   margin: 0;
+  white-space: nowrap;
 `;
 
 const UnselectedText = styled.p`
@@ -154,4 +158,5 @@ const UnselectedText = styled.p`
   color: white;
   opacity: 0.5;
   margin: 0;
+  white-space: nowrap;
 `;
