@@ -100,10 +100,10 @@ const Header = styled.div`
 `;
 
 const TitleImage = styled.img`
-  width: 17.9vw;
-  height: 4.7vh;
+  width: 13.5vw;
+  height: 5vh;
   cursor: pointer;
-  margin-left: 7.5vw;
+  margin-left: 9.5vw;
 `;
 
 const ButtonContainer = styled.div`
@@ -113,7 +113,7 @@ const ButtonContainer = styled.div`
 `;
 
 const TeamButton = styled.a`
-  padding: 10px 12px;
+  padding: 14px 12px;
   border-radius: 8px;
   background: linear-gradient(
     to bottom,
