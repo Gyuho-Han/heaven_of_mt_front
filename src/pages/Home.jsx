@@ -40,6 +40,7 @@ const Home = () => {
       navigate(gameData[selectedGame].route);
     }
   };
+  
 
   if (windowWidth < 1126 || windowHeight < 627) {
     return <ReadyPage />;
