@@ -44,8 +44,10 @@ const CategoryPage = () => {
   return (
     <Container onKeyDown={handleKeyDown} tabIndex="0" ref={focusRef}>
       <Header>
-        <TitleImage src="/images/title.png" alt="title" onClick={() => navigate(-1)} />
-      </Header>
+        <ExitButton onClick={() => navigate(-1)}>
+          <img src="/images/Exit.png" alt="exit" />
+        </ExitButton>
+        \      </Header>
       <Content>
         <CategoryRow>
           <CategoryButton
@@ -102,14 +104,20 @@ const Container = styled.div`
 const Header = styled.div`
   width: 100%;
   display: flex;
-  justify-content: flex-start;
-  padding: 5.6vh 8.4vw 0 8.4vw;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7.5vh 0 0 0;
 `;
 
-const TitleImage = styled.img`
-  width: 15vw;
-  height: 3.8vh;
+const ExitButton = styled.button`
+  width: 2.8vw;
+  background: none;
+  border: none;
   cursor: pointer;
+  padding: 0 0 0 7.5vw ;
+  img {
+    width: 3vw;
+  }
 `;
 
 const Content = styled.div`
@@ -122,18 +130,21 @@ const Content = styled.div`
 
 const CategoryRow = styled.div`
   display: flex;
-  margin-left: 8.5vw;
+  gap: 3.6vw; 
 `;
 
 const CategoryButton = styled.div`
   position: relative;
   width: 19vw;
   height: 56vh;
-  margin-right: 2.4vw;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
 `;
 
 const CategoryImg = styled.img`

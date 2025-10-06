@@ -98,11 +98,11 @@ const MovieGamePage = () => {
         <div style={{ width: '48px' }} />
       </Header>
       <Content>
-        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0}>
+        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0} chevron="left">
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
-          <Card>
+          <Card isAnswered={isAnswered}>
             {isAnswered ? (
               <AnswerText>{cards[currentCardIndex].answer}</AnswerText>
             ) : (
@@ -110,7 +110,7 @@ const MovieGamePage = () => {
             )}
           </Card>
         </CardContainer>
-        <NavButton onClick={handleNext}>
+        <NavButton onClick={handleNext} chevron="right">
           <img src="/images/icon_chevron_right.png" alt="next" />
         </NavButton>
       </Content>
@@ -139,14 +139,15 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7.1vh 7.5vw 0 7.5vw;
+  padding: 7.5vh 0 0 0;
 `;
 
 const ExitButton = styled.button`
+  width: 2.8vw;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0 0 0 7.5vw ;
   img {
     width: 3vw;
   }
@@ -155,23 +156,32 @@ const ExitButton = styled.button`
 const Counter = styled.div`
   font-family: 'DungGeunMo', sans-serif;
   font-size: 3.3vw;
+  position: absolute;
+  left: 50%; 
+  transform: translateX(-50%);
 `;
 
 const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
 `;
 
 const NavButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
+
   img {
-    width: 5vw;
+    height: 9.3vh;
   }
+    
+  ${(props) => props.chevron === 'left' && `left: 8vw;`}
+  ${(props) => props.chevron === 'right' && `right: 8vw;`}
+
   &:disabled {
     cursor: default;
     opacity: 0.5;
@@ -179,32 +189,28 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  width: 70vw;
-  height: 67vh;
+  height: 54.1vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
-  overflow: hidden;
+  padding: ${(props) => (props.isAnswered ? '30vh 0 0 0' : '6.1vh 0 0 0')};
 `;
 
 const Card = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: 100%;
 `;
 
 const CardImage = styled.img`
-  width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
 `;
 
 const AnswerText = styled.p`
+  height: 12.9vh;
   font-family: 'DungGeunMo', sans-serif;
   font-size: 6vw;
   color: #ff62d3;
@@ -213,7 +219,7 @@ const AnswerText = styled.p`
 `;
 
 const AnswerButton = styled.button`
-  width: 17.3vw;
+  width: 19.5vw;
   height: 8.5vh;
   background-color: ${(props) => (props.isAnswered ? 'white' : '#ff62d3')};
   border: none;
@@ -222,5 +228,5 @@ const AnswerButton = styled.button`
   font-size: 3vw;
   color: black;
   cursor: pointer;
-  margin-bottom: 3.8vh;
+  margin-top: 5.1vh;
 `;

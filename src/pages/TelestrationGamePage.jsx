@@ -98,17 +98,17 @@ const TelestrationGamePage = () => {
         <div style={{ width: '48px' }} />
       </Header>
       <Content>
-        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0}>
+        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0} chevron="left">
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
-          <Card>
+          <Card isAnswered={isAnswered}>
             {isAnswered
               ? '게임 진행 중 ...'
               : cards[currentCardIndex].name}
           </Card>
         </CardContainer>
-        <NavButton onClick={handleNext}>
+        <NavButton onClick={handleNext} chevron="right">
           <img src="/images/icon_chevron_right.png" alt="next" />
         </NavButton>
       </Content>
@@ -137,14 +137,15 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7.1vh 7.5vw 0 7.5vw;
+  padding: 7.5vh 0 0 0;
 `;
 
 const ExitButton = styled.button`
+  width: 2.8vw;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0 0 0 7.5vw ;
   img {
     width: 3vw;
   }
@@ -153,23 +154,32 @@ const ExitButton = styled.button`
 const Counter = styled.div`
   font-family: 'DungGeunMo', sans-serif;
   font-size: 3.3vw;
+  position: absolute;
+  left: 50%; 
+  transform: translateX(-50%);
 `;
 
 const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
 `;
 
 const NavButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
+
   img {
-    width: 5vw;
+    height: 9.3vh;
   }
+    
+  ${(props) => props.chevron === 'left' && `left: 8vw;`}
+  ${(props) => props.chevron === 'right' && `right: 8vw;`}
+
   &:disabled {
     cursor: default;
     opacity: 0.5;
@@ -178,24 +188,23 @@ const NavButton = styled.button`
 
 const CardContainer = styled.div`
   width: 70vw;
-  height: 40vh;
+  height: 18.7vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
+  padding: 27vh 0 0 0;
 `;
 
 const Card = styled.div`
   font-family: 'DungGeunMo', sans-serif;
-  font-size: 11vw;
-  color: white;
+  font-size: ${(props) => (props.isAnswered ? '8vw' : '11vw')};
+  color: ${(props) => (props.isAnswered ? '#ff62d3' : 'white')};
   white-space: pre-wrap;
   text-align: center;
 `;
 
 const AnswerButton = styled.button`
-  width: 17.3vw;
+  width: 19.5vw;
   height: 8.5vh;
   background-color: ${(props) => (props.isAnswered ? 'white' : '#ff62d3')};
   border: none;
@@ -204,5 +213,5 @@ const AnswerButton = styled.button`
   font-size: 3vw;
   color: black;
   cursor: pointer;
-  margin-bottom: 10vh;
+  margin-top: 19.5vh;
 `;
