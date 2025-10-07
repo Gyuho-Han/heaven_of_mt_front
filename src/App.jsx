@@ -14,8 +14,29 @@ import CategoryPage from './pages/CategoryPage';
 import MusicTitleGamePage from './pages/MusicTitleGamePage';
 import MovieGamePage from './pages/MovieGamePage';
 import GameOver from './pages/GameOver';
+import ChannelService from './ChannelService';
 
 function App() {
+
+  useEffect(() => {
+
+    ChannelService.loadScript();
+    ChannelService.boot({
+      "pluginKey": import.meta.env.VITE_CHANNELTALK_KEY, // fill your plugin key
+
+      // 얘네는 로그인 기능 넣고 나야지 유의미한 친구들
+      // "memberId": "USER_MEMBER_ID", // fill user's member id
+      // "profile": { // fill user's profile
+      //   "name": "USER_NAME", // fill user's name
+      //   "mobileNumber": "USER_MOBILE_NUMBER", // fill user's mobile number
+      //   "landlineNumber": "USER_LANDLINE_NUMBER", // fill user's landline number
+      //   "customField1": "VALUE_1", // custom property
+      //   "customField2": "VALUE_2" // custom property
+      // }
+
+    });
+  }, []);
+
   // Prevent page scrolling when using arrow keys or spacebar during gameplay
   useEffect(() => {
     const preventScrollKeys = (e) => {
