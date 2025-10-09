@@ -68,9 +68,11 @@ const GameOver = () => {
 export default GameOver;
 
 const Container = styled.div`
-  background-image: url(${(props) => (props.$isChurch ? "'/images/feedback_church.gif'" : "'/images/feedback.gif'")});
+  background-image: url('/images/feedback.gif');
   background-size: cover;
+  background-position: center top -190px;
   height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -105,12 +107,15 @@ const ButtonText = styled.p`
   font-family: 'DungGeunMo', sans-serif;
   font-size: 48px;
   font-weight: 400;
+  height: 52px;
   margin: 0;
 `;
 
 const HoverButtonContainer = styled.div`
   display: flex;
   align-items: center;
+  position: relative;
+  right: 21px;
   img {
     width: 32px;
     height: 52px;
