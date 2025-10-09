@@ -137,7 +137,6 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
       queueSnap(60);
     }, 160);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex, ready, pad]);
 
   // ===== 초기 위치 세팅 =====
@@ -149,13 +148,10 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     const target = exactCenterTopForIndex(el, selectedIndex);
     el.scrollTop = target; // 첫 위치는 즉시 고정
     setActiveIndex(selectedIndex);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, pad]);
 
   return (
     <Wrapper>
-      {/* 중앙 어둡게 처리 오버레이 제거됨 */}
-
       <List ref={scrollRef} onScroll={handleScroll}>
         <Spacer style={{ height: pad }} aria-hidden />
         {data.map((item, index) => {
@@ -205,8 +201,6 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
 };
 
 export default Picker;
-
-/* ========================= styled-components ========================= */
 
 const CENTER_BAND_VW = '4.6vw';
 
@@ -264,7 +258,7 @@ const SelectedItemContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ff62d3;   /* 필요 시 #ffeb3b */
+  background-color: #ff62d3;  
   width: 26.5vw;
   height: 100%;
   z-index: 2;
