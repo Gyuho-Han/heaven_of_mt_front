@@ -7,7 +7,11 @@ import Picker from '../components/Picker';
 import ReadyPage from './ReadyPage';
 
 const Home = () => {
-  const [selectedGame, setSelectedGame] = useState(0);
+  const [selectedGame, setSelectedGame] = useState(() => {
+    const saved = sessionStorage.getItem('lastSelectedGameIndex');
+    const parsed = saved !== null ? parseInt(saved, 10) : 0;
+    return Number.isNaN(parsed) ? 0 : parsed;
+  });
   const [isHovering2, setIsHovering2] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -37,6 +41,7 @@ const Home = () => {
     } else if (e.key === 'ArrowDown') {
       setSelectedGame((prev) => (prev < gameData.length - 1 ? prev + 1 : prev));
     } else if (e.key === 'Enter') {
+      sessionStorage.setItem('lastSelectedGameIndex', String(selectedGame));
       navigate(gameData[selectedGame].route);
     }
   };
@@ -73,7 +78,10 @@ const Home = () => {
           data={gameData}
           selectedIndex={selectedGame}
           onSelect={setSelectedGame}
-          onConfirmSelected={() => navigate(gameData[selectedGame].route)}
+          onConfirmSelected={() => {
+            sessionStorage.setItem('lastSelectedGameIndex', String(selectedGame));
+            navigate(gameData[selectedGame].route);
+          }}
         />
       </Content>
     </Container>
