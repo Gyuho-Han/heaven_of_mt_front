@@ -85,6 +85,7 @@ export default Home;
 const Container = styled.div`
   background-image: url('/images/background_final.png');
   background-size: cover;
+  background-position: center top -120px;
   width: 100vw;
   height: 100vh;
   display: flex;
