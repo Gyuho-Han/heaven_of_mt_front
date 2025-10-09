@@ -62,6 +62,19 @@ const MovieGamePage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Prefetch next 2 images to reduce wait between cards
+  useEffect(() => {
+    const toPrefetch = [currentCardIndex + 1, currentCardIndex + 2]
+      .map((i) => cards[i])
+      .filter((c) => c && c.name);
+
+    toPrefetch.forEach((c) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = c.name;
+    });
+  }, [cards, currentCardIndex]);
+
   const handleNext = () => {
     if (currentCardIndex < cards.length - 1) {
       setCurrentCardIndex((prev) => prev + 1);
@@ -106,7 +119,12 @@ const MovieGamePage = () => {
             {isAnswered ? (
               <AnswerText>{cards[currentCardIndex].answer}</AnswerText>
             ) : (
-              <CardImage src={cards[currentCardIndex].name} alt="movie scene" />
+              <CardImage
+                src={cards[currentCardIndex].name}
+                alt="movie scene"
+                decoding="async"
+                fetchpriority="high"
+              />
             )}
           </Card>
         </CardContainer>

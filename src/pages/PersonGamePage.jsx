@@ -63,6 +63,19 @@ const PersonGamePage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Prefetch next 2 images to reduce wait between cards
+  useEffect(() => {
+    const toPrefetch = [currentCardIndex + 1, currentCardIndex + 2]
+      .map((i) => cards[i])
+      .filter((c) => c && c.name);
+
+    toPrefetch.forEach((c) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = c.name;
+    });
+  }, [cards, currentCardIndex]);
+
   const handleNext = () => {
     if (currentCardIndex < cards.length - 1) {
       setCurrentCardIndex((prev) => prev + 1);
@@ -103,7 +116,12 @@ const PersonGamePage = () => {
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
-          <Card src={cards[currentCardIndex].name} alt="person" />
+          <Card
+            src={cards[currentCardIndex].name}
+            alt="person"
+            decoding="async"
+            fetchpriority="high"
+          />
         </CardContainer>
         <NavButton onClick={handleNext} chevron="right">
           <img src="/images/icon_chevron_right.png" alt="next" />
