@@ -1,146 +1,281 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
   const scrollRef = useRef(null);
-  const itemHeightRef = useRef(0);
-  const wheelLockRef = useRef(false);
-  const touchStartYRef = useRef(null);
+  const itemHeightRef = useRef(0);        // 아이템 블록(간격 포함) 높이
   const [ready, setReady] = useState(false);
 
-  // Measure item height once mounted for centering math
-  useEffect(() => {
+  // 타이머/상태 플래그들
+  const idleTimerRef = useRef(null);
+  const forceAlignTimerRef = useRef(null);
+  const isUserScrollingRef = useRef(false);   // 사용자 제스처 스크롤 중?
+  const progScrollRef = useRef(false);        // 키보드/코드에 의한 스크롤 중?
+
+  // 스크롤 중 실시간 중앙 후보
+  const [activeIndex, setActiveIndex] = useState(selectedIndex);
+  // 상/하 spacer
+  const [pad, setPad] = useState(0);
+
+  // ===== 측정 =====
+  const measure = () => {
     const el = scrollRef.current;
-    if (!el || el.children.length === 0) return;
-    // Find the first item element height
-    const firstItem = el.children[0];
+    if (!el) return;
+    const firstItem = el.querySelector('[data-item]');
+    if (!firstItem) return;
+
+    // 아이템 블록 높이 = 실제 렌더 높이 + margin
     const rect = firstItem.getBoundingClientRect();
-    itemHeightRef.current = rect.height;
+    const cs = window.getComputedStyle(firstItem);
+    const mt = parseFloat(cs.marginTop) || 0;
+    const mb = parseFloat(cs.marginBottom) || 0;
+    const itemBlockH = rect.height + mt + mb;
+
+    itemHeightRef.current = itemBlockH;
+
+    // 첫/마지막도 중앙 가능하도록 spacer
+    const p = Math.max(0, (el.clientHeight - itemBlockH) / 2);
+    setPad(p);
     setReady(true);
+  };
+
+  useEffect(() => {
+    measure();
+    const onResize = () => measure();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Center the selected item like CupertinoPicker
-  useEffect(() => {
+  // ===== 유틸 =====
+  const clampTop = (el, top) => Math.max(0, Math.min(top, el.scrollHeight - el.clientHeight));
+
+  const exactCenterTopForIndex = (el, idx) => {
+    const h = itemHeightRef.current;
+    const target = pad + idx * h + h / 2 - el.clientHeight / 2;
+    return Math.round(clampTop(el, target));
+  };
+
+  const computeNearestIndex = () => {
     const el = scrollRef.current;
-    const itemH = itemHeightRef.current;
-    if (!el || !itemH || !ready) return;
-    const targetCenter = selectedIndex * itemH + itemH / 2;
-    const newScrollTop = Math.max(
-      0,
-      Math.min(targetCenter - el.clientHeight / 2, el.scrollHeight - el.clientHeight)
-    );
-    el.scrollTo({ top: newScrollTop, behavior: 'smooth' });
-  }, [selectedIndex, ready]);
-
-  // Wheel handler to move exactly one step per gesture
-  const handleWheel = (e) => {
-    e.preventDefault();
-    if (wheelLockRef.current) return;
-    wheelLockRef.current = true;
-    const delta = e.deltaY;
-    if (delta > 0 && selectedIndex < data.length - 1) onSelect(selectedIndex + 1);
-    else if (delta < 0 && selectedIndex > 0) onSelect(selectedIndex - 1);
-    // unlock after animation duration (~250ms)
-    setTimeout(() => {
-      wheelLockRef.current = false;
-    }, 250);
+    const h = itemHeightRef.current;
+    if (!el || !h) return 0;
+    const centerY = el.scrollTop + el.clientHeight / 2;
+    const raw = (centerY - pad) / h - 0.5;
+    const nearest = Math.round(raw);
+    return Math.max(0, Math.min(data.length - 1, nearest));
   };
 
-  // Touch swipe (mobile) to move one step
-  const handleTouchStart = (e) => {
-    if (e.touches && e.touches.length > 0) {
-      touchStartYRef.current = e.touches[0].clientY;
-    }
+  const clearTimers = () => {
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    if (forceAlignTimerRef.current) clearTimeout(forceAlignTimerRef.current);
   };
-  const handleTouchMove = (e) => {
-    if (touchStartYRef.current == null) return;
-    const currentY = e.touches[0].clientY;
-    const diff = touchStartYRef.current - currentY;
-    // Threshold: half an item height
-    const threshold = (itemHeightRef.current || 40) / 2;
-    if (Math.abs(diff) > threshold) {
-      if (diff > 0 && selectedIndex < data.length - 1) onSelect(selectedIndex + 1);
-      else if (diff < 0 && selectedIndex > 0) onSelect(selectedIndex - 1);
-      touchStartYRef.current = currentY; // reset anchor for next step
-    }
+
+  // ===== 스냅 확정 =====
+  const snapToNearest = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const idx = computeNearestIndex();
+    const target = exactCenterTopForIndex(el, idx);
+
+    // 부드럽게 이동
+    el.scrollTo({ top: target, behavior: 'smooth' });
+
+    // 미세 오차 제거 강제 정렬
+    clearTimeout(forceAlignTimerRef.current);
+    forceAlignTimerRef.current = setTimeout(() => {
+      el.scrollTo({ top: target, behavior: 'auto' });
+    }, 160);
+
+    // onSelect는 확정시에만
+    if (idx !== selectedIndex) onSelect(idx);
+    setActiveIndex(idx);
   };
-  const handleTouchEnd = () => {
-    touchStartYRef.current = null;
+
+  const queueSnap = (delay = 120) => {
+    // 프로그램틱 스크롤 중에는 스냅 예약 금지
+    if (progScrollRef.current) return;
+    clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      snapToNearest();
+      setTimeout(() => { isUserScrollingRef.current = false; }, 40);
+    }, delay);
   };
+
+  // ===== 스크롤 핸들러 =====
+  const handleScroll = () => {
+    // 프로그램틱 스크롤 진행 중이면 이벤트 무시 (키보드 충돌 방지)
+    if (progScrollRef.current) return;
+
+    isUserScrollingRef.current = true;
+    const near = computeNearestIndex();
+    setActiveIndex(near);
+    queueSnap(120);
+  };
+
+  // ===== 외부 selectedIndex 변경(키보드 포함) 시 동기화 =====
+  useEffect(() => {
+    if (!ready) return;
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const target = exactCenterTopForIndex(el, selectedIndex);
+
+    // 키보드로 빠르게 이동할 때 이전 이동/스냅 타이머 취소
+    clearTimers();
+
+    progScrollRef.current = true;          // 프로그램틱 스크롤 시작
+    setActiveIndex(selectedIndex);         // 오버레이 즉시 동기화
+
+    el.scrollTo({ top: target, behavior: 'smooth' });
+    // 강제 정렬(미세 오차 제거)
+    forceAlignTimerRef.current = setTimeout(() => {
+      el.scrollTo({ top: target, behavior: 'auto' });
+      progScrollRef.current = false;       // 프로그램틱 스크롤 종료
+      // 프로그램틱 종료 뒤 살짝 스냅 보정(거의 변화 없겠지만 안전용)
+      queueSnap(60);
+    }, 160);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIndex, ready, pad]);
+
+  // ===== 초기 위치 세팅 =====
+  useEffect(() => {
+    if (!ready) return;
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const target = exactCenterTopForIndex(el, selectedIndex);
+    el.scrollTop = target; // 첫 위치는 즉시 고정
+    setActiveIndex(selectedIndex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, pad]);
 
   return (
-    <Container
-      ref={scrollRef}
-      onWheel={handleWheel}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      {data.map((item, index) => (
-        <Item
-          key={index}
-          $isSelected={index === selectedIndex}
-          onClick={() => onSelect(index)}
-        >
-          {index === selectedIndex ? (
-            <>
-            <Arrows src="/images/left.png" alt="left" />
-            <SelectedItemContainer onClick={(e) => {
-              e.stopPropagation();
-              if (onConfirmSelected) onConfirmSelected();
-            }}>
-              <SelectedText>{item.name}</SelectedText>
-              </SelectedItemContainer>
-              <Arrows src="/images/right.png" alt="right" />
-            </>
-          ) : (
-            <UnselectedText>{item.name}</UnselectedText>
-          )}
-        </Item>
-      ))}
-    </Container>
+    <Wrapper>
+      {/* 중앙 어둡게 처리 오버레이 제거됨 */}
+
+      <List ref={scrollRef} onScroll={handleScroll}>
+        <Spacer style={{ height: pad }} aria-hidden />
+        {data.map((item, index) => {
+          const isActive = index === activeIndex;
+          return (
+            <Item data-item key={index}>
+              <ItemInner>
+                {isActive ? (
+                  <>
+                    <Arrows src="/images/left.png" alt="left" />
+                    <SelectedItemContainer
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onConfirmSelected) onConfirmSelected();
+                      }}
+                    >
+                      <SelectedText>{item.name}</SelectedText>
+                    </SelectedItemContainer>
+                    <Arrows src="/images/right.png" alt="right" />
+                  </>
+                ) : (
+                  <UnselectedText>{item.name}</UnselectedText>
+                )}
+              </ItemInner>
+              <ClickableCover
+                onClick={() => {
+                  const el = scrollRef.current;
+                  if (!el) return;
+                  clearTimers();
+                  const target = exactCenterTopForIndex(el, index);
+                  isUserScrollingRef.current = true;
+                  el.scrollTo({ top: target, behavior: 'smooth' });
+                  forceAlignTimerRef.current = setTimeout(() => {
+                    el.scrollTo({ top: target, behavior: 'auto' });
+                    isUserScrollingRef.current = false;
+                  }, 160);
+                  queueSnap(120);
+                }}
+              />
+            </Item>
+          );
+        })}
+        <Spacer style={{ height: pad }} aria-hidden />
+      </List>
+    </Wrapper>
   );
 };
 
 export default Picker;
 
-const Container = styled.div`
+/* ========================= styled-components ========================= */
+
+const CENTER_BAND_VW = '4.6vw';
+
+const Wrapper = styled.div`
+  position: relative;
   width: 40vw;
   height: 81vh;
-  overflow-y: auto; /* programmatic scrolling only */
+`;
+
+const List = styled.div`
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-  }
+  scroll-snap-type: y proximity;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+`;
+
+const Spacer = styled.div`
+  flex: 0 0 auto;
+  width: 100%;
 `;
 
 const Item = styled.div`
+  position: relative;
   width: 100%;
-  height: 4.1vw;
+  height: ${CENTER_BAND_VW};
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 8px 0;                 /* 간격 */
+  scroll-snap-align: center;
+`;
+
+const ItemInner = styled.div`
+  height: 4.1vw;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ClickableCover = styled.div`
+  position: absolute;
+  inset: 0;
   cursor: pointer;
 `;
 
 const SelectedItemContainer = styled.div`
+  pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ff62d3;
+  background-color: #ff62d3;   /* 필요 시 #ffeb3b */
   width: 26.5vw;
+  height: 100%;
+  z-index: 2;
 `;
 
 const Arrows = styled.img`
   width: 24px;
   height: 42px;
-  margin: 0 15px;
-`
+  margin: 0 18px;
+  z-index: 2;
+`;
 
 const SelectedText = styled.p`
   font-family: 'DungGeunMo', sans-serif;
@@ -155,8 +290,8 @@ const UnselectedText = styled.p`
   font-family: 'DungGeunMo', sans-serif;
   font-size: 3vw;
   font-weight: 400;
-  color: white;
-  opacity: 0.5;
+  color: rgba(255,255,255,0.2);  /* 더 연하게 */
   margin: 0;
   white-space: nowrap;
+  z-index: 2;
 `;
