@@ -11,9 +11,11 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'DungGeunMo', sans-serif;
     margin: 0; /* remove default body margin to use full viewport width */
     padding: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    /* Avoid forcing fixed viewport sizing to enable scrolling on tablets */
+    width: 100%;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 `;
 
