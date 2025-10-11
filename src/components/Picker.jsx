@@ -5,6 +5,10 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
   const scrollRef = useRef(null);
   const itemHeightRef = useRef(0);        // 아이템 블록(간격 포함) 높이
   const [ready, setReady] = useState(false);
+  // Wheel smoothing state (physics-based inertia)
+  const wheelAnimRef = useRef(null);
+  const wheelVelRef = useRef(0);          // current velocity (px/frame)
+  const lastWheelTsRef = useRef(0);       // last user wheel input time
 
   // 타이머/상태 플래그들
   const idleTimerRef = useRef(null);
@@ -116,6 +120,81 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     queueSnap(220);
   };
 
+  // ===== 마우스 휠 부드럽게 처리 =====
+  const stopWheelAnim = () => {
+    if (wheelAnimRef.current) {
+      cancelAnimationFrame(wheelAnimRef.current);
+      wheelAnimRef.current = null;
+    }
+  };
+
+  const startWheelAnim = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const step = () => {
+      const friction = 0.88;           // 마찰 조금 강화해 더 빨리 감속
+      const minVel = 0.15;             // 정지 판단 임계값
+
+      // 위치 업데이트
+      let top = el.scrollTop + wheelVelRef.current;
+
+      // 경계 처리: 바운스 없이 부드럽게 멈추기
+      const minTop = 0;
+      const maxTop = el.scrollHeight - el.clientHeight;
+      if (top <= minTop) {
+        top = minTop;
+        wheelVelRef.current = 0;
+      } else if (top >= maxTop) {
+        top = maxTop;
+        wheelVelRef.current = 0;
+      }
+
+      el.scrollTop = top;
+
+      // 마찰 적용으로 서서히 감속
+      wheelVelRef.current *= friction;
+
+      const idleFor = performance.now() - lastWheelTsRef.current;
+      if (Math.abs(wheelVelRef.current) < minVel && idleFor > 120) {
+        // 완전히 멈춘 뒤에만 스냅 대기
+        wheelVelRef.current = 0;
+        wheelAnimRef.current = null;
+        queueSnap(160);
+        return;
+      }
+
+      wheelAnimRef.current = requestAnimationFrame(step);
+    };
+
+    if (!wheelAnimRef.current) {
+      wheelAnimRef.current = requestAnimationFrame(step);
+    }
+  };
+
+  const handleWheel = (e) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (e.ctrlKey) return; // 확대/축소 제스처는 통과
+
+    // 기본 휠 스크롤 억제 후 관성 스크롤 적용
+    e.preventDefault();
+    lastWheelTsRef.current = performance.now();
+
+    // deltaY를 속도로 누적 (가속 계수로 민감도 조절)
+    const accel = 0.45; // 감도는 유지하되 속도 낮춤
+    const MAX_SPEED = 22; // px/frame 상한으로 과속 방지
+    wheelVelRef.current += e.deltaY * accel;
+    // 속도 상한/하한 캡
+    if (wheelVelRef.current > MAX_SPEED) wheelVelRef.current = MAX_SPEED;
+    if (wheelVelRef.current < -MAX_SPEED) wheelVelRef.current = -MAX_SPEED;
+
+    // 사용자 스크롤 중 상태로 표시
+    isUserScrollingRef.current = true;
+
+    startWheelAnim();
+  };
+
   // ===== 외부 selectedIndex 변경(키보드 포함) 시 동기화 =====
   useEffect(() => {
     if (!ready) return;
@@ -156,7 +235,7 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
 
   return (
     <Wrapper>
-      <List ref={scrollRef} onScroll={handleScroll}>
+      <List ref={scrollRef} onScroll={handleScroll} onWheel={handleWheel}>
         <Spacer style={{ height: pad }} aria-hidden />
         {data.map((item, index) => {
           const isActive = index === activeIndex;
@@ -223,7 +302,8 @@ const List = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  scroll-snap-type: y proximity;
+  /* snap은 JS로 제어하므로 CSS 스냅 비활성화 (충돌/미세 떨림 방지) */
+  /* scroll-snap-type: y proximity; */
   /* Ensure smooth/natural scroll on iOS/iPadOS */
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;

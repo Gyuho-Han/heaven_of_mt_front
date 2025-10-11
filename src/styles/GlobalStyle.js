@@ -2,6 +2,11 @@
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
+  /* Global smooth scrolling for anchor/programmatic scrolls */
+  html {
+    scroll-behavior: smooth;
+  }
+
   @font-face {
     font-family: 'DungGeunMo';
     src: url('/fonts/DungGeunMo.otf') format('opentype');
@@ -16,6 +21,7 @@ const GlobalStyle = createGlobalStyle`
     min-height: 100dvh;
     overflow-x: hidden;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* momentum scroll on iOS */
   }
 `;
 
