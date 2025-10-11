@@ -95,7 +95,7 @@ export default FourGamePage;
 
 const Container = styled.div`
   background-image: url('/images/background_final.png');
-  background-size: cover;
+  background-size: contain;
   height: 100vh;
   display: flex;
   flex-direction: column;
