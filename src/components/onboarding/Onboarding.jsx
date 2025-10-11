@@ -107,6 +107,10 @@ const InstructionsContainer = styled.div`
   margin-top: 2.99vh;
   overflow: auto;
   padding-right: 2vw;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 `;
 
 const Instruction = styled.div`
