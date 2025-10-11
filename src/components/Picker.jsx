@@ -15,6 +15,7 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
   const forceAlignTimerRef = useRef(null);
   const isUserScrollingRef = useRef(false);   // 사용자 제스처 스크롤 중?
   const progScrollRef = useRef(false);        // 키보드/코드에 의한 스크롤 중?
+  const progAnimRef = useRef(null);           // 키보드/코드 애니메이션 rAF
 
   // 스크롤 중 실시간 중앙 후보
   const [activeIndex, setActiveIndex] = useState(selectedIndex);
@@ -73,6 +74,48 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
   const clearTimers = () => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     if (forceAlignTimerRef.current) clearTimeout(forceAlignTimerRef.current);
+  };
+
+  const stopProgAnim = () => {
+    if (progAnimRef.current) {
+      cancelAnimationFrame(progAnimRef.current);
+      progAnimRef.current = null;
+    }
+  };
+
+  // Eased programmatic scroll (for keyboard)
+  const animateTo = (el, targetTop, { duration = 380 } = {}) => {
+    const startTop = el.scrollTop;
+    const clampedTarget = clampTop(el, targetTop);
+    const delta = clampedTarget - startTop;
+    if (Math.abs(delta) < 0.5) {
+      el.scrollTop = clampedTarget;
+      return Promise.resolve();
+    }
+
+    stopProgAnim();
+    progScrollRef.current = true;
+
+    const start = performance.now();
+    // easeInOutCubic
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+    return new Promise((resolve) => {
+      const step = () => {
+        const now = performance.now();
+        const t = Math.min(1, (now - start) / duration);
+        const p = ease(t);
+        el.scrollTop = startTop + delta * p;
+        if (t < 1) {
+          progAnimRef.current = requestAnimationFrame(step);
+        } else {
+          progAnimRef.current = null;
+          el.scrollTop = clampedTarget;
+          resolve();
+        }
+      };
+      progAnimRef.current = requestAnimationFrame(step);
+    });
   };
 
   // ===== 스냅 확정 =====
@@ -205,20 +248,19 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
 
     // 키보드로 빠르게 이동할 때 이전 이동/스냅 타이머 취소
     clearTimers();
+    stopProgAnim();
 
-    progScrollRef.current = true;          // 프로그램틱 스크롤 시작
     setActiveIndex(selectedIndex);         // 오버레이 즉시 동기화
 
-    el.scrollTo({ top: target, behavior: 'smooth' });
-    // 강제 정렬(미세 오차 제거) — 너무 이르면 끊김이 느껴져 지연 및 임계값 체크
-    forceAlignTimerRef.current = setTimeout(() => {
+    // 커스텀 이징 스크롤로 더 부드럽게 이동
+    animateTo(el, target, { duration: 420 }).then(() => {
+      // 미세 오차 제거
       if (Math.abs(el.scrollTop - target) > 1) {
         el.scrollTo({ top: target, behavior: 'auto' });
       }
       progScrollRef.current = false;       // 프로그램틱 스크롤 종료
-      // 프로그램틱 종료 뒤 살짝 스냅 보정(거의 변화 없겠지만 안전용)
-      queueSnap(140);
-    }, 280);
+      queueSnap(120);
+    });
 
   }, [selectedIndex, ready, pad]);
 
