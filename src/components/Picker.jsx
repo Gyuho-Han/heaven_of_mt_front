@@ -82,18 +82,20 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     // 부드럽게 이동
     el.scrollTo({ top: target, behavior: 'smooth' });
 
-    // 미세 오차 제거 강제 정렬
+    // 미세 오차 제거 강제 정렬 (너무 이른 강제정렬은 끊김을 유발하므로 지연 + 임계값 체크)
     clearTimeout(forceAlignTimerRef.current);
     forceAlignTimerRef.current = setTimeout(() => {
-      el.scrollTo({ top: target, behavior: 'auto' });
-    }, 160);
+      if (Math.abs(el.scrollTop - target) > 1) {
+        el.scrollTo({ top: target, behavior: 'auto' });
+      }
+    }, 280);
 
     // onSelect는 확정시에만
     if (idx !== selectedIndex) onSelect(idx);
     setActiveIndex(idx);
   };
 
-  const queueSnap = (delay = 120) => {
+  const queueSnap = (delay = 220) => {
     // 프로그램틱 스크롤 중에는 스냅 예약 금지
     if (progScrollRef.current) return;
     clearTimeout(idleTimerRef.current);
@@ -111,7 +113,7 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     isUserScrollingRef.current = true;
     const near = computeNearestIndex();
     setActiveIndex(near);
-    queueSnap(120);
+    queueSnap(220);
   };
 
   // ===== 외부 selectedIndex 변경(키보드 포함) 시 동기화 =====
@@ -129,13 +131,15 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     setActiveIndex(selectedIndex);         // 오버레이 즉시 동기화
 
     el.scrollTo({ top: target, behavior: 'smooth' });
-    // 강제 정렬(미세 오차 제거)
+    // 강제 정렬(미세 오차 제거) — 너무 이르면 끊김이 느껴져 지연 및 임계값 체크
     forceAlignTimerRef.current = setTimeout(() => {
-      el.scrollTo({ top: target, behavior: 'auto' });
+      if (Math.abs(el.scrollTop - target) > 1) {
+        el.scrollTo({ top: target, behavior: 'auto' });
+      }
       progScrollRef.current = false;       // 프로그램틱 스크롤 종료
       // 프로그램틱 종료 뒤 살짝 스냅 보정(거의 변화 없겠지만 안전용)
-      queueSnap(60);
-    }, 160);
+      queueSnap(140);
+    }, 280);
 
   }, [selectedIndex, ready, pad]);
 
@@ -185,10 +189,12 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
                   isUserScrollingRef.current = true;
                   el.scrollTo({ top: target, behavior: 'smooth' });
                   forceAlignTimerRef.current = setTimeout(() => {
-                    el.scrollTo({ top: target, behavior: 'auto' });
+                    if (Math.abs(el.scrollTop - target) > 1) {
+                      el.scrollTo({ top: target, behavior: 'auto' });
+                    }
                     isUserScrollingRef.current = false;
-                  }, 160);
-                  queueSnap(120);
+                  }, 240);
+                  queueSnap(180);
                 }}
               />
             </Item>
@@ -218,6 +224,9 @@ const List = styled.div`
   flex-direction: column;
   align-items: center;
   scroll-snap-type: y proximity;
+  /* Ensure smooth/natural scroll on iOS/iPadOS */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
