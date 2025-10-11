@@ -133,8 +133,8 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     if (!el) return;
 
     const step = () => {
-      const friction = 0.88;           // 마찰 조금 강화해 더 빨리 감속
-      const minVel = 0.15;             // 정지 판단 임계값
+      const friction = 0.86;           // 마찰 소폭 강화해 더 빨리 감속
+      const minVel = 0.16;             // 정지 판단 임계값 약간 상향
 
       // 위치 업데이트
       let top = el.scrollTop + wheelVelRef.current;
@@ -182,8 +182,8 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     lastWheelTsRef.current = performance.now();
 
     // deltaY를 속도로 누적 (가속 계수로 민감도 조절)
-    const accel = 0.45; // 감도는 유지하되 속도 낮춤
-    const MAX_SPEED = 22; // px/frame 상한으로 과속 방지
+    const accel = 0.2; // 감도 낮춤: 한 스텝 당 이동량 축소
+    const MAX_SPEED = 15; // px/frame 상한을 낮춰 과속 억제
     wheelVelRef.current += e.deltaY * accel;
     // 속도 상한/하한 캡
     if (wheelVelRef.current > MAX_SPEED) wheelVelRef.current = MAX_SPEED;
