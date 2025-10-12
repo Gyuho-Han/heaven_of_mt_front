@@ -225,8 +225,8 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     lastWheelTsRef.current = performance.now();
 
     // deltaY를 속도로 누적 (가속 계수로 민감도 조절)
-    const accel = 0.2; // 감도 낮춤: 한 스텝 당 이동량 축소
-    const MAX_SPEED = 15; // px/frame 상한을 낮춰 과속 억제
+    const accel = 0.1; // 감도 낮춤: 한 스텝 당 이동량 축소
+    const MAX_SPEED = 13; // px/frame 상한을 낮춰 과속 억제
     wheelVelRef.current += e.deltaY * accel;
     // 속도 상한/하한 캡
     if (wheelVelRef.current > MAX_SPEED) wheelVelRef.current = MAX_SPEED;
