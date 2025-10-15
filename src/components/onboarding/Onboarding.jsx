@@ -125,6 +125,7 @@ const InstructionIndex = styled.p`
   font-weight: 400;
   margin: 0;
   margin-right: 10px;
+  margin-top: 11px;
 `;
 
 const InstructionText = styled.p`
@@ -134,4 +135,6 @@ const InstructionText = styled.p`
   font-weight: 400;
   margin: 0;
   white-space: pre-wrap;
+  margin-top: 7px;
+  line-height: 1.4;
 `;

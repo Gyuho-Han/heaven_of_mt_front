@@ -139,5 +139,5 @@ const FeedbackLink = styled.a`
   color: white;
   text-decoration: underline;
   position: absolute;
-  bottom: 50px;
+  bottom: 120px;
 `;

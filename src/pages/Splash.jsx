@@ -96,8 +96,8 @@ const TopSpacer = styled.div`
 `;
 
 const TitleImage = styled.img`
-  width: 54vw;
-  height: 19vh;
+  width: 65vw;
+  height: 20vh;
 `;
 
 const BottomSpacer = styled.div`
