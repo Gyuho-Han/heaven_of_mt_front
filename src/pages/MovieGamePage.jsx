@@ -228,7 +228,7 @@ const CardImage = styled.img`
 `;
 
 const AnswerText = styled.p`
-  height: 12.9vh;
+  width: 75vw;
   font-family: 'DungGeunMo', sans-serif;
   font-size: 6vw;
   color: #ff62d3;

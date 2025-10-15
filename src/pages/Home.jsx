@@ -45,7 +45,7 @@ const Home = () => {
       navigate(gameData[selectedGame].route);
     }
   };
-  
+
 
   if (windowWidth < 1126 || windowHeight < 627) {
     return <ReadyPage />;
@@ -110,10 +110,9 @@ const Header = styled.div`
 `;
 
 const TitleImage = styled.img`
-  width: 13.5vw;
-  height: 5vh;
+  width: 16vw;
   cursor: pointer;
-  margin-left: 9.5vw;
+  margin-left: 8.5vw;
 `;
 
 const ButtonContainer = styled.div`
@@ -141,5 +140,5 @@ const Content = styled.div`
   justify-content: flex-start;
   align-items: flex-start;
   margin-left: 7.5vw;
-  gap: 6.3vw;
+  gap: 8vw;
 `;
