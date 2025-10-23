@@ -15,6 +15,7 @@ import MusicTitleGamePage from './pages/MusicTitleGamePage';
 import MovieGamePage from './pages/MovieGamePage';
 import GameOver from './pages/GameOver';
 import ChannelService from './ChannelService';
+import GoogleAnalyticsManager from './GoogleAnalyticsManager';
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
 
   return (
     <Router>
+      <GoogleAnalyticsManager />
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/home" element={<Home />} />
