@@ -275,9 +275,21 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     setActiveIndex(selectedIndex);
   }, [ready, pad]);
 
+  // Attach non-passive wheel listener to allow preventDefault
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const wheelListener = (e) => handleWheel(e);
+    el.addEventListener('wheel', wheelListener, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', wheelListener);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
+
   return (
     <Wrapper>
-      <List ref={scrollRef} onScroll={handleScroll} onWheel={handleWheel}>
+      <List ref={scrollRef} onScroll={handleScroll}>
         <Spacer style={{ height: pad }} aria-hidden />
         {data.map((item, index) => {
           const isActive = index === activeIndex;
