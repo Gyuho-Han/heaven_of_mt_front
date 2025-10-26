@@ -6,7 +6,7 @@ import Onboarding from '../components/onboarding/Onboarding';
 import Picker from '../components/Picker';
 import ReadyPage from './ReadyPage';
 
-const Home = () => {
+const RandomHome = () => {
   const [selectedGame, setSelectedGame] = useState(() => {
     const saved = sessionStorage.getItem('lastSelectedGameIndex');
     const parsed = saved !== null ? parseInt(saved, 10) : 0;
@@ -88,7 +88,7 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default RandomHome;
 
 const Container = styled.div`
   background-image: url('/images/background_final.png');

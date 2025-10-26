@@ -1,7 +1,8 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import Splash from './pages/Splash';
-import Home from './pages/Home';
+import RandomHome from './pages/RandomHome';
+import ModeSelectPage from './pages/ModeSelectPage';
 import ReadyPage from './pages/ReadyPage';
 import PersonGamePage from './pages/PersonGamePage';
 import DiscoGamePage from './pages/DiscoGamePage';
@@ -53,7 +54,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Splash />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/mode_select" element={<ModeSelectPage />} />
+        <Route path="/random_home" element={<RandomHome/>} />
         <Route path="/ready" element={<ReadyPage />} />
         <Route path="/person" element={<PersonGamePage />} />
         <Route path="/disco" element={<DiscoGamePage />} />

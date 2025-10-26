@@ -34,12 +34,12 @@ const Splash = () => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
-      navigate('/home');
+      navigate('/mode_select');
     }
   };
 
   const handleGameStart = () => {
-    navigate('/home');
+    navigate('/mode_select');
   };
 
   if (windowWidth < 1126) {
