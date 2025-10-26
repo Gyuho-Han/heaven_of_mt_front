@@ -34,12 +34,12 @@ const Splash = () => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
-      navigate('/mode_select');
+      navigate('/mode');
     }
   };
 
   const handleGameStart = () => {
-    navigate('/mode_select');
+    navigate('/mode');
   };
 
   if (windowWidth < 1126) {
@@ -96,8 +96,8 @@ const TopSpacer = styled.div`
 `;
 
 const TitleImage = styled.img`
-  width: 54vw;
-  height: 19vh;
+  width: 65vw;
+  height: 20vh;
 `;
 
 const BottomSpacer = styled.div`
