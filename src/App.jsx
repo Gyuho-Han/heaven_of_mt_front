@@ -1,7 +1,7 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import Splash from './pages/Splash';
-import Home from './pages/Home';
+import RandomHome from './pages/RandomHome';
 import CustomHome from './pages/CustomHome';
 import SelectModePage from './pages/SelectModePage';
 import ReadyPage from './pages/ReadyPage';
@@ -62,7 +62,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/mode" element={<SelectModePage />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/random_home" element={<RandomHome />} />
         <Route
           path="/customhome"
           element={
