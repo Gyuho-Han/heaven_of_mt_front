@@ -1,13 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import ReadyPage from './ReadyPage';
+import { useAuth } from '../GoogleAuthManager';
 
 const SelectModePage = () => {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const navigate = useNavigate();
     const focusRef = useRef(null);
+
+    const { user, googleSignIn } = useAuth();
+    const [isPopUpShow, setisPopUpShow] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
@@ -26,10 +30,16 @@ const SelectModePage = () => {
         focusRef.current?.focus();
     }, []);
 
-
     if (windowWidth < 1126 || windowHeight < 627) {
         return <ReadyPage />;
     }
+
+    useEffect(() => {
+        if (user && isPopUpShow) {
+            setisPopUpShow(false);
+            navigate('/customhome');
+        }
+    }, [user, isPopUpShow, navigate]);
 
     return (
         <Container ref={focusRef}>
@@ -44,11 +54,40 @@ const SelectModePage = () => {
                 <SelectCard onClick={() => navigate('/home')}>
                     <p>RANDOM</p>
                 </SelectCard>
-                <SelectCard>
+                <SelectCard onClick={() => setisPopUpShow(true)}>
                     <p>CUSTOM</p>
                 </SelectCard>
+                {isPopUpShow && (
+                    <LoginPopUp
+                        onClose={() => setisPopUpShow(false)}
+                        onGoogleLogin={googleSignIn}
+                    />
+                )}
             </Content>
         </Container>
+    );
+};
+
+const LoginPopUp = ({ onClose, onGoogleLogin }) => {
+    const handleGoogleLogin = async () => {
+        try {
+            await onGoogleLogin();
+        } catch (error) {
+            console.error("faild to gogle login:", error);
+        }
+    };
+
+    return (
+        <PopUpOverlay onClick={onClose}>
+            <PopUpContainer onClick={(e) => e.stopPropagation()}>
+                <p>로그인</p>
+                <GoogleLoginButton onClick={handleGoogleLogin}>
+                    Google 계정으로 로그인
+                </GoogleLoginButton>
+                <br />
+                <CloseButton onClick={onClose}>close</CloseButton>
+            </PopUpContainer>
+        </PopUpOverlay>
     );
 };
 
@@ -93,4 +132,34 @@ const SelectCard = styled.div`
   background: white;
   border: 1px solid white;
   border-radius: 16px;
+`;
+
+const PopUpOverlay = styled.div`
+position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7); 
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+`;
+
+const PopUpContainer = styled.div`
+  background: white;
+  flex-direction: column;
+  align-items: center;
+  width: 350px;
+  text-align: center;
+`;
+
+const GoogleLoginButton = styled.button`
+  background-color: blue;
+  color: white;
+`;
+
+const CloseButton = styled.button`
+  color: black;
 `;

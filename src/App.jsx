@@ -2,6 +2,7 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import Splash from './pages/Splash';
 import Home from './pages/Home';
+import CustomHome from './pages/CustomHome';
 import SelectModePage from './pages/SelectModePage';
 import ReadyPage from './pages/ReadyPage';
 import PersonGamePage from './pages/PersonGamePage';
@@ -17,8 +18,12 @@ import MovieGamePage from './pages/MovieGamePage';
 import GameOver from './pages/GameOver';
 import ChannelService from './ChannelService';
 import GoogleAnalyticsManager from './GoogleAnalyticsManager';
+import { AuthProvider, useAuth } from './GoogleAuthManager';
+import PrivateRoute from './PrivateRoute';
 
-function App() {
+function AppContent() {
+
+  const { user } = useAuth();
 
   useEffect(() => {
 
@@ -52,12 +57,20 @@ function App() {
   }, []);
 
   return (
-    <Router>
+    <>
       <GoogleAnalyticsManager />
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/mode" element={<SelectModePage />} />
         <Route path="/home" element={<Home />} />
+        <Route
+          path="/customhome"
+          element={
+            <PrivateRoute>
+              <CustomHome />
+            </PrivateRoute>
+          }
+        />
         <Route path="/ready" element={<ReadyPage />} />
         <Route path="/person" element={<PersonGamePage />} />
         <Route path="/disco" element={<DiscoGamePage />} />
@@ -71,7 +84,17 @@ function App() {
         <Route path="/movie" element={<MovieGamePage />} />
         <Route path="/gameover" element={<GameOver />} />
       </Routes>
-    </Router>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 
