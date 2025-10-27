@@ -16,7 +16,7 @@ const GameOver = () => {
   };
 
   const handleGoHome = () => {
-    navigate('/home');
+    navigate('/random_home');
   };
 
   const isChurch = gameName && gameName.startsWith('church');
