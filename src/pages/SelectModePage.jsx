@@ -62,7 +62,8 @@ const SelectModePage = () => {
                         alt="RandomPageIcon"
                     />
                     <ModeTitle>Random</ModeTitle>
-                    <ModeDesc>This mode is random mode</ModeDesc>
+                    <ModeDesc>랜덤으로 게임을</ModeDesc>
+                    <ModeDesc>진행하고 싶을때!</ModeDesc>
                 </SelectCard>
                 <SelectCard onClick={() => setisPopUpShow(true)}>
                     <PageBtnIcon
@@ -70,7 +71,8 @@ const SelectModePage = () => {
                         alt="customPageIcon"
                     />
                     <ModeTitle>Custom</ModeTitle>
-                    <ModeDesc>This mode is custom mode</ModeDesc>
+                    <ModeDesc>내가 원하는 정답을 바탕으로</ModeDesc>
+                    <ModeDesc>게임을 진행하고 싶을때!</ModeDesc>
                 </SelectCard>
                 {isPopUpShow && (
                     <LoginPopUp
@@ -185,14 +187,19 @@ const ModeTitle = styled.div`
   line-height: normal;
   letter-spacing: 3.72px;
   text-align: center;
+  margin-bottom: 12px;
 `;
 
 const ModeDesc = styled.div`
   font-family: DungGeunMo;
-  font-size: 31.502px;
+  font-size: 23px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  line-height: 125%;
+  letter-spacing: 1.175px;
+  display: flex;
+  flex-wrap: nowrap;
 `;
 
 const Content = styled.div`
@@ -200,12 +207,12 @@ const Content = styled.div`
   justify-content: center;
   align-items: flex-start;
   margin-top: 6vh;
-  gap: 6vw;
+  gap: 45px;
 `;
 
 const SelectCard = styled.div`
-  width: 25vw; 
-  height: 45vh; 
+  width: 410px; 
+  height: 370px; 
 
   box-sizing: border-box;
   display: flex;
