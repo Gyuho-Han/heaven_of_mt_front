@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import ReadyPage from './ReadyPage';
+import ReadyPage from './random/ReadyPage';
 
 const Splash = () => {
   const [isVisible, setIsVisible] = useState(true);

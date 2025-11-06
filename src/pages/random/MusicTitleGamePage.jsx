@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { captainData } from '../gameData';
+import { music1990Data, music2000Data, music2010Data, music2020Data } from '../../gameData';
 import ReadyPage from './ReadyPage';
 
-const CaptainGamePage = () => {
+const MusicTitleGamePage = () => {
   const [cards, setCards] = useState([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -12,6 +12,8 @@ const CaptainGamePage = () => {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const navigate = useNavigate();
   const focusRef = useRef(null);
+  const location = useLocation();
+  const { generation } = location.state || { generation: '' };
 
   useEffect(() => {
     const handleResize = () => {
@@ -21,19 +23,27 @@ const CaptainGamePage = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Shuffle and pick 10 cards
-    const shuffled = [...captainData].sort(() => 0.5 - Math.random());
+    let data = [];
+    if (generation === 1) {
+      data = music1990Data;
+    } else if (generation === 2) {
+      data = music2000Data;
+    } else if (generation === 3) {
+      data = music2010Data;
+    } else if (generation === 4) {
+      data = music2020Data;
+    }
+
+    const shuffled = [...data].sort(() => 0.5 - Math.random());
     setCards(shuffled.slice(0, 10));
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [generation]);
 
   useEffect(() => {
-    if (focusRef.current) {
-      focusRef.current?.focus();
-    }
+    focusRef.current?.focus();
   }, []);
 
   const handleKeyDown = useCallback((e) => {
@@ -54,7 +64,7 @@ const CaptainGamePage = () => {
         setCurrentCardIndex((prev) => prev + 1);
         setIsAnswered(false);
       } else {
-        navigate('/gameover', { state: { gameName: 'captain' } });
+        navigate('/gameover', { state: { gameName: 'musictitle' } });
       }
     }
   }, [currentCardIndex, cards.length, navigate]);
@@ -69,7 +79,7 @@ const CaptainGamePage = () => {
       setCurrentCardIndex((prev) => prev + 1);
       setIsAnswered(false);
     } else {
-      navigate('/gameover', { state: { gameName: 'captain' } });
+      navigate('/gameover', { state: { gameName: 'musictitle' } });
     }
   };
 
@@ -88,6 +98,34 @@ const CaptainGamePage = () => {
     return <div>Loading...</div>; // Or some other loading indicator
   }
 
+  // Convert a Hangul string to its initial-consonant (초성) representation
+  const toChosung = (text) => {
+    const CHO = [
+      'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ',
+      'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ',
+      'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
+    ];
+
+    return Array.from(text || '').map((ch) => {
+      const code = ch.charCodeAt(0);
+      // Precomposed Hangul syllables (AC00-D7A3)
+      if (code >= 0xac00 && code <= 0xd7a3) {
+        const idx = Math.floor((code - 0xac00) / 588);
+        return CHO[idx];
+      }
+      // Keep non-Hangul as-is (spaces, hyphens, punctuation, latin, numbers, line breaks)
+      return ch;
+    }).join('');
+  };
+
+  const getQuestionText = (card) => {
+    if (!card) return '';
+    // If provided name differs from answer, respect curated name.
+    if (card.name && card.answer && card.name !== card.answer) return card.name;
+    // Otherwise, derive from answer to avoid identical question/answer.
+    return toChosung(card.answer || '');
+  };
+
   return (
     <Container tabIndex="0" ref={focusRef}>
       <Header>
@@ -104,24 +142,24 @@ const CaptainGamePage = () => {
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
-          <Card>
+          <Card isAnswered={isAnswered}>
             {isAnswered
               ? cards[currentCardIndex].answer
-              : cards[currentCardIndex].name}
+              : getQuestionText(cards[currentCardIndex])}
           </Card>
         </CardContainer>
         <NavButton onClick={handleNext} chevron="right">
           <img src="/images/icon_chevron_right.png" alt="next" />
         </NavButton>
       </Content>
-      <AnswerButton onClick={() => setIsAnswered((prev) => !prev)} $isAnswered={isAnswered}>
-        {isAnswered ? '돌아가기' : '미션보기'}
+      <AnswerButton onClick={() => setIsAnswered((prev) => !prev)} isAnswered={isAnswered}>
+        {isAnswered ? '문제보기' : '정답보기'}
       </AnswerButton>
     </Container>
   );
 };
 
-export default CaptainGamePage;
+export default MusicTitleGamePage;
 
 const Container = styled.div`
   background-image: url('/images/background_final.png');
@@ -189,19 +227,18 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  width: 65vw;
-  height: 25.9vh;
+  width: 63vw;
+  height: 12.9vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 23.4vh 0 0 0;
-
+  padding: 29.9vh 0 0 0;
 `;
 
 const Card = styled.div`
   font-family: 'DungGeunMo', sans-serif;
-  font-size: 5.8vw;
-  color: white;
+  font-size: 6.5vw;
+  color: ${(props) => (props.isAnswered ? '#ff62d3' : 'white')};
   white-space: pre-wrap;
   text-align: center;
 `;
@@ -209,12 +246,12 @@ const Card = styled.div`
 const AnswerButton = styled.button`
   width: 19.5vw;
   height: 8.5vh;
-  margin-top: 16vh;
-  background-color: ${(props) => (props.$isAnswered ? 'white' : '#ff62d3')};
+  background-color: ${(props) => (props.isAnswered ? 'white' : '#ff62d3')};
   border: none;
   border-radius: 12px;
   font-family: 'DungGeunMo', sans-serif;
   font-size: 3vw;
   color: black;
   cursor: pointer;
+  margin-top: 22.4vh;
 `;

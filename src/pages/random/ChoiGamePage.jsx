@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { fourData } from '../gameData';
+import { choiData } from '../../gameData';
 import ReadyPage from './ReadyPage';
 
-const FourGamePage = () => {
+const ChoiGamePage = () => {
   const [cards, setCards] = useState([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -18,9 +17,11 @@ const FourGamePage = () => {
       setWindowWidth(window.innerWidth);
       setWindowHeight(window.innerHeight);
     };
+
     window.addEventListener('resize', handleResize);
 
-    const shuffled = [...fourData].sort(() => 0.5 - Math.random());
+    // Shuffle and pick 10 cards
+    const shuffled = [...choiData].sort(() => 0.5 - Math.random());
     setCards(shuffled.slice(0, 10));
 
     return () => {
@@ -37,13 +38,15 @@ const FourGamePage = () => {
       navigate(-1);
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      if (currentCardIndex > 0) setCurrentCardIndex((p) => p - 1);
+      if (currentCardIndex > 0) {
+        setCurrentCardIndex((prev) => prev - 1);
+      }
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
       if (currentCardIndex < cards.length - 1) {
-        setCurrentCardIndex((p) => p + 1);
+        setCurrentCardIndex((prev) => prev + 1);
       } else {
-        navigate('/gameover', { state: { gameName: 'four' } });
+        navigate('/gameover', { state: { gameName: 'choi' } });
       }
     }
   }, [currentCardIndex, cards.length, navigate]);
@@ -54,16 +57,26 @@ const FourGamePage = () => {
   }, [handleKeyDown]);
 
   const handleNext = () => {
-    if (currentCardIndex < cards.length - 1) setCurrentCardIndex((p) => p + 1);
-    else navigate('/gameover', { state: { gameName: 'four' } });
+    if (currentCardIndex < cards.length - 1) {
+      setCurrentCardIndex((prev) => prev + 1);
+    } else {
+      navigate('/gameover', { state: { gameName: 'choi' } });
+    }
   };
 
   const handlePrev = () => {
-    if (currentCardIndex > 0) setCurrentCardIndex((p) => p - 1);
+    if (currentCardIndex > 0) {
+      setCurrentCardIndex((prev) => prev - 1);
+    }
   };
 
-  if (windowWidth < 1126 || windowHeight < 627) return <ReadyPage />;
-  if (cards.length === 0) return <div>Loading...</div>;
+  if (windowWidth < 1126 || windowHeight < 627) {
+    return <ReadyPage />;
+  }
+
+  if (cards.length === 0) {
+    return <div>Loading...</div>; // Or some other loading indicator
+  }
 
   return (
     <Container tabIndex="0" ref={focusRef}>
@@ -91,7 +104,7 @@ const FourGamePage = () => {
   );
 };
 
-export default FourGamePage;
+export default ChoiGamePage;
 
 const Container = styled.div`
   background-image: url('/images/background_final.png');
@@ -159,12 +172,12 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  width: 47vw;
-  height: 18.7;
+  width: 34.7vw;
+  height: 24.2vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 28.4vh 0 0 0;
+  padding: 25.7vh 0 0 0;
 `;
 
 const Card = styled.div`
