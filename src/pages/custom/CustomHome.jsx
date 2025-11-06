@@ -106,6 +106,7 @@ const AddProjectBtn = styled.div`
   height: 40px;
   margin-bottom: 50px;
   font-size: 20px;
+  cursor: pointer;
 `
 
 const PreviewBtn = styled.span`
@@ -149,6 +150,7 @@ const Profile = styled.span`
   width: 50px;
   height: 50px;
   font-size: 30px;
+  cursor: pointer;
 `
 
 const Contents = styled.div`
