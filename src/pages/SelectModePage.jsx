@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import ReadyPage from './ReadyPage';
+import ReadyPage from './random/ReadyPage';
 import { useAuth } from '../GoogleAuthManager';
 
 const SelectModePage = () => {

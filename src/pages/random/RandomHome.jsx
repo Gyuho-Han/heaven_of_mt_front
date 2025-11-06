@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { gameData } from '../gameData';
-import Onboarding from '../components/onboarding/Onboarding';
-import Picker from '../components/Picker';
+import { gameData } from '../../gameData';
+import Onboarding from '../../components/onboarding/Onboarding';
+import Picker from '../../components/Picker';
 import ReadyPage from './ReadyPage';
 
 const RandomHome = () => {

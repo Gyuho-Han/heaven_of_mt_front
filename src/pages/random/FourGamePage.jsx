@@ -1,13 +1,13 @@
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { movieData } from '../gameData';
+import { fourData } from '../../gameData';
 import ReadyPage from './ReadyPage';
 
-const MovieGamePage = () => {
+const FourGamePage = () => {
   const [cards, setCards] = useState([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isAnswered, setIsAnswered] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const navigate = useNavigate();
@@ -18,11 +18,9 @@ const MovieGamePage = () => {
       setWindowWidth(window.innerWidth);
       setWindowHeight(window.innerHeight);
     };
-
     window.addEventListener('resize', handleResize);
 
-    // Shuffle and pick 10 cards
-    const shuffled = [...movieData].sort(() => 0.5 - Math.random());
+    const shuffled = [...fourData].sort(() => 0.5 - Math.random());
     setCards(shuffled.slice(0, 10));
 
     return () => {
@@ -37,22 +35,15 @@ const MovieGamePage = () => {
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') {
       navigate(-1);
-    } else if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
-      e.preventDefault();
-      setIsAnswered((prev) => !prev);
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      if (currentCardIndex > 0) {
-        setCurrentCardIndex((prev) => prev - 1);
-        setIsAnswered(false);
-      }
+      if (currentCardIndex > 0) setCurrentCardIndex((p) => p - 1);
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
       if (currentCardIndex < cards.length - 1) {
-        setCurrentCardIndex((prev) => prev + 1);
-        setIsAnswered(false);
+        setCurrentCardIndex((p) => p + 1);
       } else {
-        navigate('/gameover', { state: { gameName: 'movie' } });
+        navigate('/gameover', { state: { gameName: 'four' } });
       }
     }
   }, [currentCardIndex, cards.length, navigate]);
@@ -62,42 +53,17 @@ const MovieGamePage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Prefetch next 2 images to reduce wait between cards
-  useEffect(() => {
-    const toPrefetch = [currentCardIndex + 1, currentCardIndex + 2]
-      .map((i) => cards[i])
-      .filter((c) => c && c.name);
-
-    toPrefetch.forEach((c) => {
-      const img = new Image();
-      img.decoding = 'async';
-      img.src = c.name;
-    });
-  }, [cards, currentCardIndex]);
-
   const handleNext = () => {
-    if (currentCardIndex < cards.length - 1) {
-      setCurrentCardIndex((prev) => prev + 1);
-      setIsAnswered(false);
-    } else {
-      navigate('/gameover', { state: { gameName: 'movie' } });
-    }
+    if (currentCardIndex < cards.length - 1) setCurrentCardIndex((p) => p + 1);
+    else navigate('/gameover', { state: { gameName: 'four' } });
   };
 
   const handlePrev = () => {
-    if (currentCardIndex > 0) {
-      setCurrentCardIndex((prev) => prev - 1);
-      setIsAnswered(false);
-    }
+    if (currentCardIndex > 0) setCurrentCardIndex((p) => p - 1);
   };
 
-  if (windowWidth < 1126 || windowHeight < 627) {
-    return <ReadyPage />;
-  }
-
-  if (cards.length === 0) {
-    return <div>Loading...</div>; // Or some other loading indicator
-  }
+  if (windowWidth < 1126 || windowHeight < 627) return <ReadyPage />;
+  if (cards.length === 0) return <div>Loading...</div>;
 
   return (
     <Container tabIndex="0" ref={focusRef}>
@@ -115,31 +81,17 @@ const MovieGamePage = () => {
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
-          <Card isAnswered={isAnswered}>
-            {isAnswered ? (
-              <AnswerText>{cards[currentCardIndex].answer}</AnswerText>
-            ) : (
-              <CardImage
-                src={cards[currentCardIndex].name}
-                alt="movie scene"
-                decoding="async"
-                fetchpriority="high"
-              />
-            )}
-          </Card>
+          <Card>{cards[currentCardIndex].name}</Card>
         </CardContainer>
         <NavButton onClick={handleNext} chevron="right">
           <img src="/images/icon_chevron_right.png" alt="next" />
         </NavButton>
       </Content>
-      <AnswerButton onClick={() => setIsAnswered((prev) => !prev)} isAnswered={isAnswered}>
-        {isAnswered ? '문제보기' : '정답보기'}
-      </AnswerButton>
     </Container>
   );
 };
 
-export default MovieGamePage;
+export default FourGamePage;
 
 const Container = styled.div`
   background-image: url('/images/background_final.png');
@@ -207,44 +159,16 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  height: 54.1vh;
+  width: 47vw;
+  height: 18.7;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${(props) => (props.isAnswered ? '30vh 0 0 0' : '6.1vh 0 0 0')};
+  padding: 28.4vh 0 0 0;
 `;
 
 const Card = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-`;
-
-const CardImage = styled.img`
-  height: 100%;
-  object-fit: contain;
-  display: block;
-`;
-
-const AnswerText = styled.p`
-  width: 75vw;
   font-family: 'DungGeunMo', sans-serif;
-  font-size: 6vw;
-  color: #ff62d3;
-  white-space: pre-wrap;
-  text-align: center;
-`;
-
-const AnswerButton = styled.button`
-  width: 19.5vw;
-  height: 8.5vh;
-  background-color: ${(props) => (props.isAnswered ? 'white' : '#ff62d3')};
-  border: none;
-  border-radius: 12px;
-  font-family: 'DungGeunMo', sans-serif;
-  font-size: 3vw;
-  color: black;
-  cursor: pointer;
-  margin-top: 5.1vh;
+  font-size: 10.8vw;
+  color: white;
 `;

@@ -1,12 +1,14 @@
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { discoData } from '../gameData';
+import { personData } from '../../gameData';
 import ReadyPage from './ReadyPage';
 
-const DiscoGamePage = () => {
+const PersonGamePage = () => {
   const [cards, setCards] = useState([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [isAnswered, setIsAnswered] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ const DiscoGamePage = () => {
     window.addEventListener('resize', handleResize);
 
     // Shuffle and pick 10 cards
-    const shuffled = [...discoData].sort(() => 0.5 - Math.random());
+    const shuffled = [...personData].sort(() => 0.5 - Math.random());
     setCards(shuffled.slice(0, 10));
 
     return () => {
@@ -36,17 +38,22 @@ const DiscoGamePage = () => {
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') {
       navigate(-1);
+    } else if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
+      e.preventDefault();
+      setIsAnswered((prev) => !prev);
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
       if (currentCardIndex > 0) {
         setCurrentCardIndex((prev) => prev - 1);
+        setIsAnswered(false);
       }
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
       if (currentCardIndex < cards.length - 1) {
         setCurrentCardIndex((prev) => prev + 1);
+        setIsAnswered(false);
       } else {
-        navigate('/gameover', { state: { gameName: 'disco' } });
+        navigate('/gameover', { state: { gameName: 'person' } });
       }
     }
   }, [currentCardIndex, cards.length, navigate]);
@@ -56,17 +63,32 @@ const DiscoGamePage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Prefetch next 2 images to reduce wait between cards
+  useEffect(() => {
+    const toPrefetch = [currentCardIndex + 1, currentCardIndex + 2]
+      .map((i) => cards[i])
+      .filter((c) => c && c.name);
+
+    toPrefetch.forEach((c) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = c.name;
+    });
+  }, [cards, currentCardIndex]);
+
   const handleNext = () => {
     if (currentCardIndex < cards.length - 1) {
       setCurrentCardIndex((prev) => prev + 1);
+      setIsAnswered(false);
     } else {
-      navigate('/gameover', { state: { gameName: 'disco' } });
+      navigate('/gameover', { state: { gameName: 'person' } });
     }
   };
 
   const handlePrev = () => {
     if (currentCardIndex > 0) {
       setCurrentCardIndex((prev) => prev - 1);
+      setIsAnswered(false);
     }
   };
 
@@ -94,17 +116,33 @@ const DiscoGamePage = () => {
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
-          <Card>{cards[currentCardIndex].name}</Card>
+          <Card
+            src={cards[currentCardIndex].name}
+            alt="person"
+            decoding="async"
+            fetchpriority="high"
+          />
         </CardContainer>
         <NavButton onClick={handleNext} chevron="right">
           <img src="/images/icon_chevron_right.png" alt="next" />
         </NavButton>
       </Content>
+      <AnswerContainer>
+        {isAnswered ? (
+          <AnswerText onClick={() => setIsAnswered(false)}>
+            {cards[currentCardIndex].answer}
+          </AnswerText>
+        ) : (
+          <AnswerButton onClick={() => setIsAnswered(true)}>
+            정답보기
+          </AnswerButton>
+        )}
+      </AnswerContainer>
     </Container>
   );
 };
 
-export default DiscoGamePage;
+export default PersonGamePage;
 
 const Container = styled.div`
   background-image: url('/images/background_final.png');
@@ -172,16 +210,42 @@ const NavButton = styled.button`
 `;
 
 const CardContainer = styled.div`
-  height: 24.2vh;
+  height: 55vh;
+  display: flex;
+  padding: 6.1vh 0 0 0;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Card = styled.img`
+  height: 100%;
+  object-fit: contain;
+  display: block;
+`;
+
+const AnswerContainer = styled.div`
+  height: 8.5vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 25.7vh 0 0 0;
+  padding: 5.1vh 0 0 0;
 `;
 
-const Card = styled.div`
+const AnswerButton = styled.button`
+  width: 19.5vw;
+  height: 8.5vh;
+  background-color: #ff62d3;
+  border: none;
+  border-radius: 12px;
   font-family: 'DungGeunMo', sans-serif;
-  font-size: 10.8vw;
-  // font-size: 24.2vw;
-  color: white;
+  font-size: 3vw;
+  color: black;
+  cursor: pointer;
+`;
+
+const AnswerText = styled.div`
+  font-family: 'DungGeunMo', sans-serif;
+  font-size: 5.6vw;
+  color: #ff62d3;
+  cursor: pointer;
 `;

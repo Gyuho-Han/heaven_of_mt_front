@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { telestrationData } from '../gameData';
+import { telestrationData } from '../../gameData';
 import ReadyPage from './ReadyPage';
 
 const TelestrationGamePage = () => {
