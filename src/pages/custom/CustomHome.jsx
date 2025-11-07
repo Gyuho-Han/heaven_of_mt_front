@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import ProjectDetailPage from './ProjectDetailPage';
+import ProjectCardsPage from './ProjectCardsPage';
+import AddProjectPage from './AddProjectPage';
 
 const CustomHome = () => {
-  const navigate = useNavigate();
   return (
     <Container>
       <Contents>
@@ -12,32 +13,24 @@ const CustomHome = () => {
             + 새로운 프로젝트
           </AddProjectBtn>
           <ProjectsListContainer>
-            프로젝트
+            <ProjectListTitle>
+              프로젝트
+            </ProjectListTitle>
+
+             {/* use map to show all project of the user */}
+            {/* <ProjectList>
+              프로젝트 1
+            </ProjectList>
+            <ProjectList>
+              프로젝트 2
+            </ProjectList> */}
+            {/* use map to show all project of the user */}
+
           </ProjectsListContainer>
         </LeftCol>
-        <RightCol>
-          <Header>
-            <HeaderLeft>
-              <TitleImage
-                  src="/images/title.png"
-                  alt="title"
-                  onClick={() => navigate('/')}
-                />
-              </HeaderLeft>
-              <HeaderRight>
-                <PreviewBtn>
-                  미리보기
-                </PreviewBtn>
-                <PlayBtn>
-                  게임하기
-                </PlayBtn>
-                <Profile />
-              </HeaderRight>
-          </Header>
-          <ProjectDetailContainer>
-            
-          </ProjectDetailContainer>
-        </RightCol>
+        {/* <ProjectDetailPage /> */}
+        <ProjectCardsPage/>
+        {/* <AddProjectPage/> */}
       </Contents>
     </Container>
   );
@@ -54,44 +47,35 @@ const Container = styled.div`
   outline: none;
 `;
 
-const TitleImage = styled.img`
-  width: 16vw;
-  cursor: pointer;
-  margin-left: 3.5vw;
-`;
+const Contents = styled.div`
+  display: flex;
+  flex: 1; 
+  min-height: 0;
+`
 
 const LeftCol = styled.div`
   flex: 1;
-  padding: 20px;
+  padding: 25px;
 `
 
-const RightCol = styled.div`
-  flex: 5;
-  display: flex;
-  flex-direction: column;
-  min-height: 0; /* allow children to size within available height */
+const ProjectListTitle = styled.div`
+  font-size: 16px;
+  margin-bottom: 30px;
 `
 
-const Header = styled.div`
-  padding: 50px 40px;
-  display: flex;
+const ProjectList = styled.div`
+  padding: 12px 18px;
+  border-radius: 5.55px;
+  color: #fff;
+  background: rgba(217, 217, 217, 0.3);
+  height: 4.89vh;
+  font-size: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 1.67vh;
+  display: flex;    
   align-items: center;
-  justify-content: space-between;
-  height: 0px;
-  background: #0E193E;
-  box-shadow: 0 4px 4.8px 0 rgba(0, 0, 0, 0.17);
-`
-
-const HeaderLeft = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`
-
-const HeaderRight = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 35px;
+  cursor: pointer;
 `
 
 const AddProjectBtn = styled.div`
@@ -102,74 +86,16 @@ const AddProjectBtn = styled.div`
   border-radius: 5px;
   background: rgba(217, 217, 217, 0.3);
   color: #fff;
-  width: calc(100% - 20px);
-  height: 40px;
+  width: 100%;
+  height: 5.56vh;
   margin-bottom: 50px;
   font-size: 20px;
   cursor: pointer;
+  box-sizing: border-box;
 `
-
-const PreviewBtn = styled.span`
-  border-radius: 6px;
-  background: rgba(39, 151, 255, 0.20);
-  display: inline-flex;
-  padding: 11px 12px;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  color: #2797FF;
-  font-family: DungGeunMo;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  cursor: pointer;
-`
-
-const PlayBtn = styled.span`
-  border-radius: 6px;
-  background: #2797FF;
-  display: inline-flex;
-  padding: 11px 12px;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  color: #FFF;
-  font-family: DungGeunMo;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  cursor: pointer;
-`
-
-
-const Profile = styled.span`
-  border-radius: 100px;
-  background-color: #fff;
-  width: 50px;
-  height: 50px;
-  font-size: 30px;
-  cursor: pointer;
-`
-
-const Contents = styled.div`
-  display: flex;
-  flex: 1; /* fill Container's height */
-  min-height: 0;
-`
-
 const ProjectsListContainer = styled.div`
   width: 100%;
   height: 75vh;
   color: #fff;
 `
-
-const ProjectDetailContainer = styled.div`
-  flex: 1; /* take remaining height under Header */
-  background-color: blue;
-  width: 100%;
-  background: #1B1C23;
-  min-height: 0;
-  overflow: auto;
-`
+ 
