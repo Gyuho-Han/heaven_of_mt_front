@@ -1,23 +1,19 @@
-import React from 'react';
-import styled from 'styled-components';
-import ProjectDetailPage from './ProjectDetailPage';
-import ProjectCardsPage from './ProjectCardsPage';
-import AddProjectPage from './AddProjectPage';
+import React from "react";
+import styled from "styled-components";
+import ProjectDetailPage from "./ProjectDetailPage";
+import ProjectCardsPage from "./ProjectCardsPage";
+import AddProjectPage from "./AddProjectPage";
 
 const CustomHome = () => {
   return (
     <Container>
       <Contents>
         <LeftCol>
-          <AddProjectBtn>
-            + 새로운 프로젝트
-          </AddProjectBtn>
+          <AddProjectBtn>+ 새로운 프로젝트</AddProjectBtn>
           <ProjectsListContainer>
-            <ProjectListTitle>
-              프로젝트
-            </ProjectListTitle>
+            <ProjectListTitle>프로젝트</ProjectListTitle>
 
-             {/* use map to show all project of the user */}
+            {/* use map to show all project of the user */}
             {/* <ProjectList>
               프로젝트 1
             </ProjectList>
@@ -25,11 +21,10 @@ const CustomHome = () => {
               프로젝트 2
             </ProjectList> */}
             {/* use map to show all project of the user */}
-
           </ProjectsListContainer>
         </LeftCol>
-        {/* <ProjectDetailPage /> */}
-        <ProjectCardsPage/>
+        <ProjectDetailPage />
+        {/* <ProjectCardsPage/> */}
         {/* <AddProjectPage/> */}
       </Contents>
     </Container>
@@ -39,7 +34,7 @@ const CustomHome = () => {
 export default CustomHome;
 
 const Container = styled.div`
-  background-image: url('/images/home.gif');
+  background-image: url("/images/home.gif");
   background-size: cover;
   height: 100vh;
   display: flex;
@@ -49,19 +44,19 @@ const Container = styled.div`
 
 const Contents = styled.div`
   display: flex;
-  flex: 1; 
+  flex: 1;
   min-height: 0;
-`
+`;
 
 const LeftCol = styled.div`
   flex: 1;
   padding: 25px;
-`
+`;
 
 const ProjectListTitle = styled.div`
   font-size: 16px;
   margin-bottom: 30px;
-`
+`;
 
 const ProjectList = styled.div`
   padding: 12px 18px;
@@ -73,10 +68,10 @@ const ProjectList = styled.div`
   box-sizing: border-box;
   width: 100%;
   margin-top: 1.67vh;
-  display: flex;    
+  display: flex;
   align-items: center;
   cursor: pointer;
-`
+`;
 
 const AddProjectBtn = styled.div`
   padding: 10px 12px;
@@ -92,10 +87,9 @@ const AddProjectBtn = styled.div`
   font-size: 20px;
   cursor: pointer;
   box-sizing: border-box;
-`
+`;
 const ProjectsListContainer = styled.div`
   width: 100%;
   height: 75vh;
   color: #fff;
-`
- 
+`;
