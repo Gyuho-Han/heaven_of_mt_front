@@ -1,10 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import ProjectDetailPage from "./ProjectDetailPage";
 import ProjectCardsPage from "./ProjectCardsPage";
 import AddProjectPage from "./AddProjectPage";
+import { useAuth } from "../../GoogleAuthManager";
+import { readProjects } from "../../firebase/Projects";
 
 const CustomHome = () => {
+  const { user } = useAuth();
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const readUserProjects = async () => {
+      const list = await readProjects(user.uid);
+      setProjects(list);
+    };
+
+    readUserProjects();
+  }, [user]);
+
   return (
     <Container>
       <Contents>
@@ -12,6 +28,13 @@ const CustomHome = () => {
           <AddProjectBtn>+ 새로운 프로젝트</AddProjectBtn>
           <ProjectsListContainer>
             <ProjectListTitle>프로젝트</ProjectListTitle>
+
+            {/* project Read test */}
+            {/* {projects.map((project) => (
+              <ProjectList key={project.id}>
+                {project.title}
+              </ProjectList>
+            ))} */}
 
             {/* use map to show all project of the user */}
             {/* <ProjectList>
@@ -23,9 +46,9 @@ const CustomHome = () => {
             {/* use map to show all project of the user */}
           </ProjectsListContainer>
         </LeftCol>
-        <ProjectDetailPage />
-        {/* <ProjectCardsPage/> */}
-        {/* <AddProjectPage/> */}
+        {/* <ProjectDetailPage /> */}
+        {/* <ProjectCardsPage /> */}
+        <AddProjectPage />
       </Contents>
     </Container>
   );
