@@ -24,8 +24,8 @@ const CustomHome = () => {
           </ProjectsListContainer>
         </LeftCol>
         <ProjectDetailPage />
-        {/* <ProjectCardsPage/> */}
-        {/* <AddProjectPage/> */}
+        {/* <ProjectCardsPage /> */}
+        {/* <AddProjectPage /> */}
       </Contents>
     </Container>
   );
