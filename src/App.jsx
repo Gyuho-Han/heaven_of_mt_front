@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Splash from './pages/Splash';
 import RandomHome from './pages/random/RandomHome';
 import CustomHome from './pages/custom/CustomHome';
+import ProjectDetailPage from './pages/custom/ProjectDetailPage';
 import SelectModePage from './pages/SelectModePage';
 import ReadyPage from './pages/random/ReadyPage';
 import PersonGamePage from './pages/random/PersonGamePage';
@@ -68,6 +69,14 @@ function AppContent() {
           element={
             <PrivateRoute>
               <CustomHome />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/customhome/detail"
+          element={
+            <PrivateRoute>
+              <ProjectDetailPage />
             </PrivateRoute>
           }
         />
