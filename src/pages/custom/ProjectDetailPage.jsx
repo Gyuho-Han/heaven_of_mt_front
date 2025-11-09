@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const ProjectDetailPage = () => {
   const navigate = useNavigate();
@@ -16,7 +16,10 @@ const ProjectDetailPage = () => {
     const rect = el.getBoundingClientRect();
     const containerRect = containerRef.current?.getBoundingClientRect();
     if (containerRect) {
-      setPickerPos({ top: rect.top - containerRect.top, left: rect.left - containerRect.left });
+      setPickerPos({
+        top: rect.top - containerRect.top,
+        left: rect.left - containerRect.left,
+      });
     } else {
       setPickerPos({ top: rect.top, left: rect.left });
     }
@@ -35,15 +38,19 @@ const ProjectDetailPage = () => {
         setShowPicker(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPicker]);
 
   return (
     <RightCol>
       <Header>
         <HeaderLeft>
-          <TitleImage src="/images/title.png" alt="title" onClick={() => navigate('/')} />
+          <TitleImage
+            src="/images/title.png"
+            alt="title"
+            onClick={() => navigate("/")}
+          />
         </HeaderLeft>
         <HeaderRight>
           <PreviewBtn>미리보기</PreviewBtn>
@@ -55,13 +62,15 @@ const ProjectDetailPage = () => {
         <GameList>
           <GameListTopRow>
             <GameListTitle>전체 게임</GameListTitle>
-            <AddGameBtn ref={addGameBtnRef} onClick={handleOpenPicker}>+</AddGameBtn>
+            <AddGameBtn ref={addGameBtnRef} onClick={handleOpenPicker}>
+              +
+            </AddGameBtn>
           </GameListTopRow>
           <GameComponentList>
             {/* use map to show all project of the user */}
             <GameListComponent>
               <GameListIndex>1</GameListIndex>
-              <GameListBadge>인물퀴즈</GameListBadge>
+              <GameListBadge>텔레스트레이션</GameListBadge>
             </GameListComponent>
             <GameListComponent>
               <GameListIndex>2</GameListIndex>
@@ -71,24 +80,40 @@ const ProjectDetailPage = () => {
           </GameComponentList>
         </GameList>
         {showPicker && (
-          <PickerContainer ref={pickerRef} $top={pickerPos.top} $left={pickerPos.left}>
+          <PickerContainer
+            ref={pickerRef}
+            $top={pickerPos.top}
+            $left={pickerPos.left}
+          >
             <PickerList>
               {[
-                '네글자퀴즈',
-                '노래초성게임',
-                '단어텔레파시',
-                '대표게임',
-                '디스코',
-                '명대사퀴즈',
-                '액션초성게임',
-                '인물퀴즈',
-                '텔레스트레이션',
+                "네글자퀴즈",
+                "노래초성게임",
+                "단어텔레파시",
+                "대표게임",
+                "디스코",
+                "명대사퀴즈",
+                "액션초성게임",
+                "인물퀴즈",
+                "텔레스트레이션",
               ].map((name) => (
                 <PickerButton key={name}>{name}</PickerButton>
               ))}
             </PickerList>
           </PickerContainer>
         )}
+        <InputContainer>
+          <InputTopRow>
+            <GameTypeBadge>텔레스트레이션</GameTypeBadge>
+            <InfoIcon>i</InfoIcon>
+            <EditBtn>편집</EditBtn>
+          </InputTopRow>
+          <InputTitles>
+            <InputTitle>파일</InputTitle>
+            <InputTitle>정답</InputTitle>
+          </InputTitles>
+          <Input>s</Input>
+        </InputContainer>
       </ProjectDetailContainer>
     </RightCol>
   );
@@ -115,14 +140,14 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 0px;
-  background: #0E193E;
+  background: #0e193e;
   box-shadow: 0 4px 4.8px 0 rgba(0, 0, 0, 0.17);
 `;
 
 const ProjectDetailContainer = styled.div`
   flex: 1;
   width: 100%;
-  background: #1B1C23;
+  background: #1b1c23;
   min-height: 0;
   overflow: auto;
   display: flex;
@@ -146,7 +171,7 @@ const GameList = styled.div`
   padding: 20px;
   border-radius: 10.82px;
   border: 1.082px solid #555;
-  background: #25262D;
+  background: #25262d;
   width: 16.67vw;
 `;
 
@@ -157,7 +182,7 @@ const GameListTitle = styled.span`
 
 const AddGameBtn = styled.span`
   border-radius: 4px;
-  background: #D3D3D3;
+  background: #d3d3d3;
   display: flex;
   width: 30px;
   height: 30px;
@@ -183,13 +208,13 @@ const GameListIndex = styled.span`
 `;
 
 const GameListBadge = styled.span`
-  color: #FF62D3;
+  color: #ff62d3;
   font-size: 20px;
   border-radius: 6px;
-  background: rgba(255, 98, 211, 0.20);
+  background: rgba(255, 98, 211, 0.2);
   display: flex;
   width: 12.76vw;
-  height: 5.00vh;
+  height: 5vh;
   padding: 12px;
   justify-content: center;
   align-items: center;
@@ -212,13 +237,13 @@ const HeaderRight = styled.span`
 
 const PreviewBtn = styled.span`
   border-radius: 6px;
-  background: rgba(39, 151, 255, 0.20);
+  background: rgba(39, 151, 255, 0.2);
   display: inline-flex;
   padding: 11px 12px;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  color: #2797FF;
+  color: #2797ff;
   font-family: DungGeunMo;
   font-size: 18px;
   font-style: normal;
@@ -229,18 +254,15 @@ const PreviewBtn = styled.span`
 
 const PlayBtn = styled.span`
   border-radius: 6px;
-  background: #2797FF;
+  background: #2797ff;
   display: inline-flex;
   padding: 11px 12px;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  color: #FFF;
+  color: #fff;
   font-family: DungGeunMo;
   font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
   cursor: pointer;
 `;
 
@@ -259,8 +281,8 @@ const PickerContainer = styled.div`
   left: ${(p) => p.$left + 30}px;
   border-radius: 12px;
   border: 1px solid #555;
-  background: #25262D;
-  box-shadow: 0 4px 6px 2px rgba(0, 0, 0, 0.30);
+  background: #25262d;
+  box-shadow: 0 4px 6px 2px rgba(0, 0, 0, 0.3);
   padding: 20px;
   box-sizing: border-box;
   z-index: 1000;
@@ -269,15 +291,16 @@ const PickerContainer = styled.div`
 const PickerList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 13px;
 `;
 
 const PickerButton = styled.button`
   border: none;
   border-radius: 6px;
-  background: rgba(255, 203, 15, 0.20);
-  color: #FFCB0F;
-  font-size: 18px;
+  background: rgba(255, 203, 15, 0.2);
+  color: #ffcb0f;
+  font-size: 16px;
+  font-family: DungGeunMo;
   padding: 10px 12px;
   text-align: center;
   cursor: pointer;
@@ -286,3 +309,83 @@ const PickerButton = styled.button`
   white-space: nowrap;
 `;
 
+const InputTopRow = styled.div`
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const GameTypeBadge = styled.span`
+  color: #ff62d3;
+  font-size: 22px;
+  border-radius: 6px;
+  background: rgba(255, 98, 211, 0.2);
+  display: flex;
+  width: 14vw;
+  height: 7vh;
+  padding: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+`;
+
+const InfoIcon = styled.span`
+  color: #dadadb;
+  font-family: DungGeunMo;
+  font-size: 15.961px;
+  border-radius: 19.153px;
+  background: #858587;
+  display: flex;
+  width: 13px;
+  height: 13px;
+  padding: 4.873px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 20px;
+`;
+
+const EditBtn = styled.span`
+  color: #858587;
+  font-family: DungGeunMo;
+  font-size: 20px;
+  cursor: pointer;
+  position: absolute;
+  right: 150px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const InputContainer = styled.div`
+  flex: 1;
+  width: 100%;
+  padding: 0 40px;
+  box-sizing: border-box;
+`;
+
+const InputTitles = styled.div`
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: space-between;
+`;
+
+const InputTitle = styled.span`
+  color: #fff;
+  font-family: DungGeunMo;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: flex;
+  margin: 0 auto;
+`;
+
+const Input = styled.div`
+  background-color: red;
+`;

@@ -1,34 +1,38 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const AddProjectPage = () => {
   const navigate = useNavigate();
   const projects = [
-    { id: 1, name: '프로젝트 A' },
-    { id: 2, name: '프로젝트 B' },
-    { id: 3, name: '프로젝트 C' },
-    { id: 4, name: '프로젝트 D' },
-    { id: 5, name: '프로젝트 E' },
-    { id: 6, name: '프로젝트 F' },
-    { id: 7, name: '프로젝트 G' },
+    { id: 1, name: "프로젝트 A" },
+    { id: 2, name: "프로젝트 B" },
+    { id: 3, name: "프로젝트 C" },
+    { id: 4, name: "프로젝트 D" },
+    { id: 5, name: "프로젝트 E" },
+    { id: 6, name: "프로젝트 F" },
+    { id: 7, name: "프로젝트 G" },
   ];
   const [openMenuId, setOpenMenuId] = useState(null);
 
   return (
     <RightCol>
-        <Container>
+      <Container>
         <Header>
-            <HeaderLeft>
-            <TitleImage src="/images/title.png" alt="title" onClick={() => navigate('/')} />
-            </HeaderLeft>
-            <HeaderRight>
-             <Profile />
-            </HeaderRight>
+          <HeaderLeft>
+            <TitleImage
+              src="/images/title.png"
+              alt="title"
+              onClick={() => navigate("/")}
+            />
+          </HeaderLeft>
+          <HeaderRight>
+            <Profile />
+          </HeaderRight>
         </Header>
         <ProjectDetailContainer onClick={() => setOpenMenuId(null)}>
           <CardGrid>
-            <AddCard onClick={() => navigate('/custom/add')}>
+            <AddCard onClick={() => navigate("/custom/add")}>
               <AddIcon>
                 <Plus>+</Plus>
               </AddIcon>
@@ -48,11 +52,14 @@ const AddProjectPage = () => {
                     </EllipsisButton>
                     {openMenuId === p.id && (
                       <DropdownMenu onClick={(e) => e.stopPropagation()}>
-                        <MenuItem onClick={() => alert('이름 변경')}>
-                          <MenuIcon src="/images/ChangeNameIcon.svg" alt="change-name" />
+                        <MenuItem onClick={() => alert("이름 변경")}>
+                          <MenuIcon
+                            src="/images/ChangeNameIcon.svg"
+                            alt="change-name"
+                          />
                           이름 변경
                         </MenuItem>
-                        <MenuItem danger onClick={() => alert('삭제')}>
+                        <MenuItem danger onClick={() => alert("삭제")}>
                           <MenuIcon src="/images/DeleteIcon.svg" alt="delete" />
                           삭제
                         </MenuItem>
@@ -65,9 +72,7 @@ const AddProjectPage = () => {
             ))}
           </CardGrid>
         </ProjectDetailContainer>
-
-        
-        </Container>
+      </Container>
     </RightCol>
   );
 };
@@ -82,7 +87,7 @@ const RightCol = styled.div`
 `;
 
 const Container = styled.div`
-  background-image: url('/images/home.gif');
+  background-image: url("/images/home.gif");
   background-size: cover;
   height: 100vh;
   display: flex;
@@ -102,14 +107,14 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 0px;
-  background: #0E193E;
+  background: #0e193e;
   box-shadow: 0 4px 4.8px 0 rgba(0, 0, 0, 0.17);
 `;
 
 const ProjectDetailContainer = styled.div`
   flex: 1;
   width: 100%;
-  background: #1B1C23;
+  background: #1b1c23;
   min-height: 0;
   overflow: auto;
   display: flex;
@@ -133,9 +138,10 @@ const CardGrid = styled.div`
 const CardBase = styled.div`
   width: 100%;
   height: 13.43vh;
+  min-height: 120px;
   flex-shrink: 0;
   border-radius: 5px;
-  background: #25262D;
+  background: #25262d;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -160,7 +166,7 @@ const AddIcon = styled.div`
 `;
 
 const Plus = styled.span`
-  color: #FFF;
+  color: #fff;
   font-family: DungGeunMo;
   font-size: 30px;
   font-style: normal;
@@ -182,7 +188,7 @@ const CardContent = styled.div`
 `;
 
 const ProjectName = styled.span`
-  color: #FFF;
+  color: #fff;
   font-family: DungGeunMo;
   font-size: 18px;
   font-style: normal;
@@ -206,7 +212,7 @@ const EllipsisWrapper = styled.div`
 const EllipsisButton = styled.button`
   all: unset;
   cursor: pointer;
-  color: #FFF;
+  color: #fff;
   font-family: DungGeunMo;
   font-size: 15px;
   letter-spacing: -1.2px;
@@ -226,8 +232,8 @@ const DropdownMenu = styled.div`
   min-width: 120px;
   padding: 6px;
   border-radius: 8px;
-  background: #2A2B33;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  background: #2a2b33;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   z-index: 10;
 `;
 
@@ -235,14 +241,14 @@ const MenuItem = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #FFF; /* 삭제 텍스트도 하얀색으로 */
+  color: #fff; /* 삭제 텍스트도 하얀색으로 */
   font-family: DungGeunMo;
   font-size: 14px;
   padding: 8px 10px;
   border-radius: 6px;
   cursor: pointer;
   &:hover {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
   }
 `;
 
