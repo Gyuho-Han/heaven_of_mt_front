@@ -1,11 +1,25 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { createProject } from "../../firebase/Projects";
+import { useAuth } from '../../GoogleAuthManager';
+
 
 const AddProjectPage = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectName, setProjectName] = useState('');
+  const { user } = useAuth();
+
+  const createProjectModal = async () => {
+    await createProject({
+      userId: user.uid,
+      title: projectName,
+    });
+
+    setProjectName("");
+  };
+
   // This page shows an empty-state (no projects) UI.
 
   return (
@@ -42,8 +56,9 @@ const AddProjectPage = () => {
               />
               <ModalActions>
                 <CreateBtn
-                  onClick={() => {
+                  onClick={async () => {
                     // TODO: Hook up actual project creation logic
+                    await createProjectModal();
                     setIsModalOpen(false);
                   }}
                 >
