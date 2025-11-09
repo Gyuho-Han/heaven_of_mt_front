@@ -9,6 +9,7 @@ const ProjectDetailPage = () => {
   const addGameBtnRef = useRef(null);
   const pickerRef = useRef(null);
   const containerRef = useRef(null);
+  const [inputs, setInputs] = useState([{ id: 1, value: "" }]);
 
   const handleOpenPicker = () => {
     const el = addGameBtnRef.current;
@@ -41,6 +42,17 @@ const ProjectDetailPage = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPicker]);
+
+  const handleAddInput = () => {
+    setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
+  };
+
+  // 입력값 업데이트
+  const handleInputChange = (id, newValue) => {
+    setInputs((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, value: newValue } : item))
+    );
+  };
 
   return (
     <RightCol>
@@ -112,7 +124,22 @@ const ProjectDetailPage = () => {
             <InputTitle>파일</InputTitle>
             <InputTitle>정답</InputTitle>
           </InputTitles>
-          <Input>s</Input>
+          <InputBoxesScrollArea>
+            <InputBoxesContainer>
+              {inputs.map((item) => (
+                <InputBox key={item.id}>
+                  <InputIndex>{item.id}</InputIndex>
+                  <Input
+                    placeholder="단어를 입력해주세요"
+                    value={item.value}
+                    onChange={(e) => handleInputChange(item.id, e.target.value)}
+                  />
+                </InputBox>
+              ))}
+            </InputBoxesContainer>
+            <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+          </InputBoxesScrollArea>
+          <SaveBtn>저장</SaveBtn>
         </InputContainer>
       </ProjectDetailContainer>
     </RightCol>
@@ -366,6 +393,9 @@ const InputContainer = styled.div`
   width: 100%;
   padding: 0 40px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 `;
 
 const InputTitles = styled.div`
@@ -386,6 +416,98 @@ const InputTitle = styled.span`
   margin: 0 auto;
 `;
 
-const Input = styled.div`
+const InputBoxesContainer = styled.div`
+  padding-right: 40px;
+`;
+
+const InputBox = styled.div`
   background-color: red;
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 3px;
+  background: rgba(238, 238, 238, 0.2);
+  margin-top: 15px;
+`;
+
+const InputIndex = styled.div`
+  color: #fff;
+  margin-left: 13px;
+  color: #dadadb;
+  font-family: DungGeunMo;
+  font-size: 24px;
+`;
+
+const Input = styled.input`
+  width: 88%;
+  border-radius: 3px;
+  background: rgba(160, 160, 160, 0.7);
+  height: 30px;
+  padding-left: 25px;
+
+  font-family: DungGeunMo;
+  font-size: 18px;
+  color: #25262d;
+
+  &::placeholder {
+    color: #25262d;
+    font-family: DungGeunMo;
+    font-size: 18px;
+  }
+
+  &:focus {
+    border: 3px solid gray;
+    outline: none;
+  }
+`;
+
+const AddInputBoxBtn = styled.div`
+  border-radius: 4px;
+  background: #d3d3d3;
+  display: flex;
+  width: 26px;
+  height: 26px;
+  padding: 6.106px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6.106px;
+  flex-shrink: 0;
+  color: #000;
+  font-family: DungGeunMo;
+  font-size: 25px;
+  cursor: pointer;
+  margin: 40px auto 0 auto;
+`;
+
+const SaveBtn = styled.div`
+  align-self: center;
+  border-radius: 6px;
+  background: rgba(255, 98, 211, 0.3);
+  width: 95%;
+  height: 40px;
+  color: #ff62d3;
+  font-family: DungGeunMo;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  margin-right: 35px;
+
+  &:hover {
+    background: rgba(255, 98, 211, 0.45);
+  }
+`;
+
+const InputBoxesScrollArea = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 8px; /* small breathing room above SaveBtn */
 `;

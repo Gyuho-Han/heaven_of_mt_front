@@ -1,36 +1,34 @@
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
-import Splash from './pages/Splash';
-import RandomHome from './pages/random/RandomHome';
-import CustomHome from './pages/custom/CustomHome';
-import ProjectDetailPage from './pages/custom/ProjectDetailPage';
-import SelectModePage from './pages/SelectModePage';
-import ReadyPage from './pages/random/ReadyPage';
-import PersonGamePage from './pages/random/PersonGamePage';
-import DiscoGamePage from './pages/random/DiscoGamePage';
-import CaptainGamePage from './pages/random/CaptainGamePage';
-import FourGamePage from './pages/random/FourGamePage';
-import TeleGamePage from './pages/random/TeleGamePage';
-import TelestrationGamePage from './pages/random/TelestrationGamePage';
-import ChoiGamePage from './pages/random/ChoiGamePage';
-import CategoryPage from './pages/random/CategoryPage';
-import MusicTitleGamePage from './pages/random/MusicTitleGamePage';
-import MovieGamePage from './pages/random/MovieGamePage';
-import GameOver from './pages/random/GameOver';
-import ChannelService from './ChannelService';
-import GoogleAnalyticsManager from './GoogleAnalyticsManager';
-import { AuthProvider, useAuth } from './GoogleAuthManager';
-import PrivateRoute from './PrivateRoute';
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import Splash from "./pages/Splash";
+import RandomHome from "./pages/random/RandomHome";
+import CustomHome from "./pages/custom/CustomHome";
+import ProjectDetailPage from "./pages/custom/ProjectDetailPage";
+import SelectModePage from "./pages/SelectModePage";
+import ReadyPage from "./pages/random/ReadyPage";
+import PersonGamePage from "./pages/random/PersonGamePage";
+import DiscoGamePage from "./pages/random/DiscoGamePage";
+import CaptainGamePage from "./pages/random/CaptainGamePage";
+import FourGamePage from "./pages/random/FourGamePage";
+import TeleGamePage from "./pages/random/TeleGamePage";
+import TelestrationGamePage from "./pages/random/TelestrationGamePage";
+import ChoiGamePage from "./pages/random/ChoiGamePage";
+import CategoryPage from "./pages/random/CategoryPage";
+import MusicTitleGamePage from "./pages/random/MusicTitleGamePage";
+import MovieGamePage from "./pages/random/MovieGamePage";
+import GameOver from "./pages/random/GameOver";
+import ChannelService from "./ChannelService";
+import GoogleAnalyticsManager from "./GoogleAnalyticsManager";
+import { AuthProvider, useAuth } from "./GoogleAuthManager";
+import PrivateRoute from "./PrivateRoute";
 
 function AppContent() {
-
   const { user } = useAuth();
 
   useEffect(() => {
-
     ChannelService.loadScript();
     ChannelService.boot({
-      "pluginKey": import.meta.env.VITE_CHANNELTALK_KEY, // fill your plugin key
+      pluginKey: import.meta.env.VITE_CHANNELTALK_KEY, // fill your plugin key
 
       // 얘네는 로그인 기능 넣고 나야지 유의미한 친구들
       // "memberId": "USER_MEMBER_ID", // fill user's member id
@@ -41,20 +39,26 @@ function AppContent() {
       //   "customField1": "VALUE_1", // custom property
       //   "customField2": "VALUE_2" // custom property
       // }
-
     });
   }, []);
 
   // Prevent page scrolling when using arrow keys or spacebar during gameplay
   useEffect(() => {
     const preventScrollKeys = (e) => {
-      const keysToBlock = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Spacebar'];
+      const keysToBlock = [
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowUp",
+        "ArrowDown",
+        " ",
+        "Spacebar",
+      ];
       if (keysToBlock.includes(e.key)) {
         e.preventDefault();
       }
     };
-    window.addEventListener('keydown', preventScrollKeys);
-    return () => window.removeEventListener('keydown', preventScrollKeys);
+    window.addEventListener("keydown", preventScrollKeys);
+    return () => window.removeEventListener("keydown", preventScrollKeys);
   }, []);
 
   return (
