@@ -31,9 +31,7 @@ const CustomHome = () => {
 
             {/* project Read test */}
             {/* {projects.map((project) => (
-              <ProjectList key={project.id}>
-                {project.title}
-              </ProjectList>
+              <ProjectList key={project.id}>{project.title}</ProjectList>
             ))} */}
 
             {/* use map to show all project of the user */}
@@ -46,9 +44,9 @@ const CustomHome = () => {
             {/* use map to show all project of the user */}
           </ProjectsListContainer>
         </LeftCol>
-        {/* <ProjectDetailPage /> */}
+        <ProjectDetailPage />
         {/* <ProjectCardsPage /> */}
-        <AddProjectPage />
+        {/* <AddProjectPage /> */}
       </Contents>
     </Container>
   );

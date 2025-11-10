@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import Textinput from "./gamePages/inputTypes/TextInput";
+import ImageTextInput from "./gamePages/inputTypes/ImageTextInput";
+import TextTextInput from "./gamePages/inputTypes/TextTextInput";
 
 const ProjectDetailPage = () => {
   const navigate = useNavigate();
@@ -9,6 +12,8 @@ const ProjectDetailPage = () => {
   const addGameBtnRef = useRef(null);
   const pickerRef = useRef(null);
   const containerRef = useRef(null);
+  const [inputs, setInputs] = useState([{ id: 1, value: "" }]);
+  const [images, setImages] = useState({});
 
   const handleOpenPicker = () => {
     const el = addGameBtnRef.current;
@@ -41,6 +46,8 @@ const ProjectDetailPage = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPicker]);
+
+  // inputs 상태는 이 페이지에서 관리하고, 조작 함수는 하위 컴포넌트로 전달해 사용합니다.
 
   return (
     <RightCol>
@@ -102,18 +109,14 @@ const ProjectDetailPage = () => {
             </PickerList>
           </PickerContainer>
         )}
-        <InputContainer>
-          <InputTopRow>
-            <GameTypeBadge>텔레스트레이션</GameTypeBadge>
-            <InfoIcon>i</InfoIcon>
-            <EditBtn>편집</EditBtn>
-          </InputTopRow>
-          <InputTitles>
-            <InputTitle>파일</InputTitle>
-            <InputTitle>정답</InputTitle>
-          </InputTitles>
-          <Input>s</Input>
-        </InputContainer>
+        {/* <Textinput inputs={inputs} setInputs={setInputs} /> */}
+        <TextTextInput inputs={inputs} setInputs={setInputs} />
+        {/* <ImageTextInput
+          inputs={inputs}
+          setInputs={setInputs}
+          images={images}
+          setImages={setImages}
+        /> */}
       </ProjectDetailContainer>
     </RightCol>
   );
@@ -307,85 +310,4 @@ const PickerButton = styled.button`
   outline: none;
   display: inline-block;
   white-space: nowrap;
-`;
-
-const InputTopRow = styled.div`
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const GameTypeBadge = styled.span`
-  color: #ff62d3;
-  font-size: 22px;
-  border-radius: 6px;
-  background: rgba(255, 98, 211, 0.2);
-  display: flex;
-  width: 14vw;
-  height: 7vh;
-  padding: 12px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  box-sizing: border-box;
-`;
-
-const InfoIcon = styled.span`
-  color: #dadadb;
-  font-family: DungGeunMo;
-  font-size: 15.961px;
-  border-radius: 19.153px;
-  background: #858587;
-  display: flex;
-  width: 13px;
-  height: 13px;
-  padding: 4.873px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  margin-left: 20px;
-`;
-
-const EditBtn = styled.span`
-  color: #858587;
-  font-family: DungGeunMo;
-  font-size: 20px;
-  cursor: pointer;
-  position: absolute;
-  right: 150px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const InputContainer = styled.div`
-  flex: 1;
-  width: 100%;
-  padding: 0 40px;
-  box-sizing: border-box;
-`;
-
-const InputTitles = styled.div`
-  display: flex;
-  width: 100%;
-  box-sizing: border-box;
-  justify-content: space-between;
-`;
-
-const InputTitle = styled.span`
-  color: #fff;
-  font-family: DungGeunMo;
-  font-size: 22px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  display: flex;
-  margin: 0 auto;
-`;
-
-const Input = styled.div`
-  background-color: red;
 `;
