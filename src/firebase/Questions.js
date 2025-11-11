@@ -40,7 +40,7 @@ export async function createQuestion({ gameId, orderIndex, questionText, imgUrl,
 
 // 하나
 export async function readQuestion(id) {
-    const question = await getDoc(doc(db, COLLECTION, id));
+    const question = await getDoc(collection(db, COLLECTION, id));
     return question.exists() ? question.data() : null;
 }
 
@@ -61,7 +61,6 @@ export async function readQuestions(gameId) {
 export async function updateQuestion(id, data) {
     await updateDoc(doc(db, COLLECTION, id), {
         ...data,
-        updatedAt: serverTimestamp(),
     });
 }
 
