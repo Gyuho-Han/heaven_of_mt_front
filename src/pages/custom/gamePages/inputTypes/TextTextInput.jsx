@@ -110,7 +110,8 @@ const Input = styled.input`
 
 const Input2 = styled.input`
   flex: 1;
-  height: 30px;
+  height: 3.33vh;
+  min-height: 30px;
 
   border-radius: 3px;
   border: 1px solid #d9d9d9;
