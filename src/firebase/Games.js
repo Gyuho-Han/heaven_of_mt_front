@@ -15,7 +15,7 @@ import {
 const COLLECTION = "games";
 
 export async function createGame({ gameType, projectId, userId }) {
-    const ref = await addDoc(doc(db, COLLECTION), {
+    const ref = await addDoc(collection(db, COLLECTION), {
         gameType,
         projectId,
         userId,
