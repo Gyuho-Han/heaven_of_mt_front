@@ -1,39 +1,52 @@
-// 네글자퀴즈
+// 대표게임
 
 import React from "react";
 import styled from "styled-components";
 
-const FourLetterInput = ({ inputs, setInputs }) => {
+const VerticalTextText = ({ inputs, setInputs }) => {
   const handleAddInput = () => {
-    setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
+    setInputs((prev) => [
+      ...prev,
+      { id: prev.length + 1, description: "", mission: "" },
+    ]);
   };
 
-  const handleValueChange = (id, rawValue) => {
-    const limited = (rawValue || "").slice(0, 2);
+  const handleInputChange = (id, field, newValue) => {
     setInputs((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, value: limited } : item))
+      prev.map((item) =>
+        item.id === id ? { ...item, [field]: newValue } : item
+      )
     );
   };
   return (
     <InputContainer>
       <InputTopRow>
-        <GameTypeBadge>네글자퀴즈</GameTypeBadge>
+        <GameTypeBadge>대표게임</GameTypeBadge>
         <InfoIcon>i</InfoIcon>
         <EditBtn>편집</EditBtn>
       </InputTopRow>
-
       <InputBoxesScrollArea>
         <InputBoxesContainer>
           {inputs.map((item) => (
             <InputBox key={item.id}>
               <InputIndex>{item.id}</InputIndex>
-              <Input
-                maxLength={2}
-                value={item.value || ""}
-                onChange={(e) => handleValueChange(item.id, e.target.value)}
-              />
-              <EmptySquare />
-              <EmptySquare />
+              <InputsColumn>
+                <Input
+                  placeholder="지문을 입력해주세요"
+                  value={item.description || ""}
+                  onChange={(e) =>
+                    handleInputChange(item.id, "description", e.target.value)
+                  }
+                />
+                <Input
+                  placeholder="미션을 입력해주세요"
+                  value={item.mission || ""}
+                  onChange={(e) =>
+                    handleInputChange(item.id, "mission", e.target.value)
+                  }
+                  className="bottominput"
+                />
+              </InputsColumn>
             </InputBox>
           ))}
         </InputBoxesContainer>
@@ -44,7 +57,7 @@ const FourLetterInput = ({ inputs, setInputs }) => {
   );
 };
 
-export default FourLetterInput;
+export default VerticalTextText;
 
 const InputContainer = styled.div`
   flex: 1;
@@ -63,14 +76,14 @@ const InputBoxesContainer = styled.div`
 const InputBox = styled.div`
   background-color: red;
   width: 100%;
-  padding: 5px;
+  padding: 10px;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 35px;
   border-radius: 3px;
   background: rgba(238, 238, 238, 0.2);
   margin-top: 15px;
-  gap: 10px;
 `;
 
 const InputIndex = styled.div`
@@ -82,44 +95,43 @@ const InputIndex = styled.div`
 `;
 
 const Input = styled.input`
-  width: 60px;
-  height: 3.33vh;
-  min-height: 30px;
-  margin-left: 30px;
-  text-align: center;
+  width: 100%;
+  border-radius: 3px;
+  background: rgba(160, 160, 160, 0.7);
+  height: 42px;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 6px 30px;
 
   font-family: DungGeunMo;
-  font-size: 19px;
-  color: #fff;
-
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #fff;
-  border-radius: 0;
-  padding: 2px 0;
+  font-size: 18px;
+  color: #25262d;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+    color: #25262d;
     font-family: DungGeunMo;
     font-size: 18px;
-    text-align: center;
   }
 
   &:focus {
+    border: 3px solid gray;
     outline: none;
-    border-bottom: 2px solid #fff;
+  }
+
+  &.bottominput {
+    background-color: white;
+
+    &::placeholder {
+      color: #636161;
+    }
   }
 `;
 
-const EmptySquare = styled.div`
-  height: 3.33vh;
-  min-height: 30px;
-  width: 3.33vh;
-  min-width: 30px;
-
-  border-radius: 3px;
-  border: 1px solid rgba(160, 160, 160, 0.7);
-  background: rgba(160, 160, 160, 0.7);
+const InputsColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
 `;
 
 const AddInputBoxBtn = styled.div`
@@ -169,6 +181,7 @@ const InputBoxesScrollArea = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   padding-bottom: 8px; /* small breathing room above SaveBtn */
+  margin-top: 20px;
 `;
 
 const InputTopRow = styled.div`
