@@ -1,9 +1,10 @@
 // 네글자퀴즈
 
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-const FourLetterInput = ({ inputs, setInputs }) => {
+const FourLetterInput = ({ inputs, setInputs, onSave, gameType }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const handleAddInput = () => {
     setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
   };
@@ -14,32 +15,47 @@ const FourLetterInput = ({ inputs, setInputs }) => {
       prev.map((item) => (item.id === id ? { ...item, value: limited } : item))
     );
   };
+
+  const handleDelete = (idx) => {
+    setInputs((prev) => prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, id: i + 1 })));
+  };
   return (
     <InputContainer>
       <InputTopRow>
-        <GameTypeBadge>네글자퀴즈</GameTypeBadge>
+        <GameTypeBadge>{gameType || '네글자퀴즈'}</GameTypeBadge>
         <InfoIcon>i</InfoIcon>
-        <EditBtn>편집</EditBtn>
+        <EditBtn onClick={() => setIsEditing((v) => !v)}>{isEditing ? '완료' : '편집'}</EditBtn>
       </InputTopRow>
 
       <InputBoxesScrollArea>
         <InputBoxesContainer>
-          {inputs.map((item) => (
-            <InputBox key={item.id}>
-              <InputIndex>{item.id}</InputIndex>
-              <Input
-                maxLength={2}
-                value={item.value || ""}
-                onChange={(e) => handleValueChange(item.id, e.target.value)}
-              />
-              <EmptySquare />
-              <EmptySquare />
-            </InputBox>
+          {inputs.map((item, idx) => (
+            <Row key={item.id}>
+              <InputBox>
+                <InputIndex>{item.id}</InputIndex>
+                <Input
+                  maxLength={2}
+                  value={item.value || ""}
+                  onChange={(e) => handleValueChange(item.id, e.target.value)}
+                />
+                <EmptySquare />
+                <EmptySquare />
+              </InputBox>
+              {isEditing && (
+                <DeleteIcon
+                  src="/images/deleteBtn.svg"
+                  alt="delete"
+                  onClick={() => handleDelete(idx)}
+                />
+              )}
+            </Row>
           ))}
         </InputBoxesContainer>
-        <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+        {(inputs?.length ?? 0) < 20 && (
+          <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+        )}
       </InputBoxesScrollArea>
-      <SaveBtn>저장</SaveBtn>
+      <SaveBtn onClick={onSave}>저장</SaveBtn>
     </InputContainer>
   );
 };
@@ -62,14 +78,13 @@ const InputBoxesContainer = styled.div`
 
 const InputBox = styled.div`
   background-color: red;
-  width: 100%;
+  flex: 1;
   padding: 5px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   border-radius: 3px;
   background: rgba(238, 238, 238, 0.2);
-  margin-top: 15px;
   gap: 10px;
 `;
 
@@ -121,6 +136,21 @@ const EmptySquare = styled.div`
   border: 1px solid rgba(160, 160, 160, 0.7);
   background: rgba(160, 160, 160, 0.7);
 `;
+
+const DeleteIcon = styled.img`
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  cursor: pointer;
+`;
+
+const Row = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+`
 
 const AddInputBoxBtn = styled.div`
   border-radius: 4px;
@@ -184,8 +214,8 @@ const GameTypeBadge = styled.span`
   border-radius: 6px;
   background: rgba(255, 98, 211, 0.2);
   display: flex;
-  width: 14vw;
-  height: 7vh;
+  width: 11vw;
+  height: 5vh;
   padding: 12px;
   justify-content: center;
   align-items: center;
