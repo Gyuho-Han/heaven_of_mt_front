@@ -3,22 +3,41 @@
 import React from "react";
 import styled from "styled-components";
 
-const FourLetterInput = ({ inputs, setInputs }) => {
+const FourLetterInput = ({ onSelect }) => {
   return (
     <FirstGamePageContainer>
       <Title>첫번째 게임을 선택해주세요</Title>
       <Columns>
         <LeftCol>
-          <GameTypeBadge>노래초성게임</GameTypeBadge>
-          <GameTypeBadge>단어텔레파시</GameTypeBadge>
-          <GameTypeBadge>대표게임</GameTypeBadge>
-          <GameTypeBadge>디스코</GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("네글자게임")}>
+            네글자게임
+          </GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("노래초성게임")}>
+            노래초성게임
+          </GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("단어텔레파시")}>
+            단어텔레파시
+          </GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("대표게임")}>
+            대표게임
+          </GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("디스코")}>
+            디스코
+          </GameTypeBadge>
         </LeftCol>
         <RightCol>
-          <GameTypeBadge>명대사퀴즈</GameTypeBadge>
-          <GameTypeBadge>액션초성게임</GameTypeBadge>
-          <GameTypeBadge>인물퀴즈</GameTypeBadge>
-          <GameTypeBadge>텔레스트레이션</GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("명대사퀴즈")}>
+            명대사퀴즈
+          </GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("액션초성게임")}>
+            액션초성게임
+          </GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("인물퀴즈")}>
+            인물퀴즈
+          </GameTypeBadge>
+          <GameTypeBadge onClick={() => onSelect?.("텔레스트레이션")}>
+            텔레스트레이션
+          </GameTypeBadge>
         </RightCol>
       </Columns>
     </FirstGamePageContainer>
@@ -74,4 +93,5 @@ const GameTypeBadge = styled.span`
   flex-shrink: 0;
   box-sizing: border-box;
   margin: 15px;
+  cursor: pointer;
 `;
