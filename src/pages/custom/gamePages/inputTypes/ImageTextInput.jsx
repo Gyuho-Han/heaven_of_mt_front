@@ -124,7 +124,8 @@ const InputIndex = styled.div`
 
 const Input = styled.input`
   flex: 1;
-  height: 30px;
+  height: 3.33vh;
+  min-height: 30px;
   padding-left: 25px;
 
   border-radius: 3px;

@@ -78,7 +78,8 @@ const Input = styled.input`
   width: 88%;
   border-radius: 3px;
   background: rgba(160, 160, 160, 0.7);
-  height: 30px;
+  height: 3.33vh;
+  min-height: 30px;
   padding-left: 25px;
 
   font-family: DungGeunMo;

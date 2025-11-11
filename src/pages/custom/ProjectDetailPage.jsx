@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Textinput from "./gamePages/inputTypes/TextInput";
 import ImageTextInput from "./gamePages/inputTypes/ImageTextInput";
 import TextTextInput from "./gamePages/inputTypes/TextTextInput";
+import FourLetterInput from "./gamePages/inputTypes/FourLetterInput";
 
 const ProjectDetailPage = () => {
   const navigate = useNavigate();
@@ -110,7 +111,8 @@ const ProjectDetailPage = () => {
           </PickerContainer>
         )}
         {/* <Textinput inputs={inputs} setInputs={setInputs} /> */}
-        <TextTextInput inputs={inputs} setInputs={setInputs} />
+        {/* <TextTextInput inputs={inputs} setInputs={setInputs} /> */}
+        <FourLetterInput inputs={inputs} setInputs={setInputs} />
         {/* <ImageTextInput
           inputs={inputs}
           setInputs={setInputs}
