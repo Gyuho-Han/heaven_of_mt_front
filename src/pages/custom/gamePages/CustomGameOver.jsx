@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-const GameOver = () => {
+const CustomGameOver = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [isHovering2, setIsHovering2] = useState(false);
   const navigate = useNavigate();
@@ -17,7 +17,12 @@ const GameOver = () => {
   };
 
   const handleGoHome = () => {
-    navigate('/customhome');
+    const projectId = sessionStorage.getItem('currentProjectId');
+    if (projectId) {
+      navigate(`/customhome/gamestart/${projectId}`);
+    } else {
+      navigate('/customhome');
+    }
   };
 
   const isChurch = gameName && gameName.startsWith('church');
@@ -66,7 +71,7 @@ const GameOver = () => {
   );
 };
 
-export default GameOver;
+export default CustomGameOver;
 
 const Container = styled.div`
   background-image: url('/images/feedback.gif');
