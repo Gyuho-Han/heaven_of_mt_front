@@ -4,6 +4,7 @@ import Splash from "./pages/Splash";
 import RandomHome from "./pages/random/RandomHome";
 import CustomHome from "./pages/custom/CustomHome";
 import ProjectDetailPage from "./pages/custom/ProjectDetailPage";
+import GameStart from "./pages/custom/GameStart";
 import SelectModePage from "./pages/SelectModePage";
 import ReadyPage from "./pages/random/ReadyPage";
 import PersonGamePage from "./pages/random/PersonGamePage";
@@ -84,6 +85,14 @@ function AppContent() {
             </PrivateRoute>
           }
         />
+          <Route
+            path="/customhome/gamestart/:projectId"
+            element={
+              <PrivateRoute>
+                <GameStart />
+              </PrivateRoute>
+            }
+          />
         <Route path="/ready" element={<ReadyPage />} />
         <Route path="/person" element={<PersonGamePage />} />
         <Route path="/disco" element={<DiscoGamePage />} />
