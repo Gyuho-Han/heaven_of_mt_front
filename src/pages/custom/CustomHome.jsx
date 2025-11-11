@@ -5,10 +5,13 @@ import ProjectCardsPage from "./ProjectCardsPage";
 import AddProjectPage from "./AddProjectPage";
 import { useAuth } from "../../GoogleAuthManager";
 import { readProjects } from "../../firebase/Projects";
+import { createProject } from "../../firebase/Projects";
+import ProjectCreateModal from "../../components/ProjectCreateModal";
 
 const CustomHome = () => {
   const { user } = useAuth();
   const [projects, setProjects] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -21,32 +24,42 @@ const CustomHome = () => {
     readUserProjects();
   }, [user]);
 
+  const createProjectModal = async (name) => {
+    if (!user) return;
+    await createProject({
+      userId: user.uid,
+      title: name,
+    });
+    const list = await readProjects(user.uid);
+    setProjects(list);
+  };
+
   return (
     <Container>
       <Contents>
         <LeftCol>
-          <AddProjectBtn>+ 새로운 프로젝트</AddProjectBtn>
+          <AddProjectBtn onClick={() => setIsModalOpen(true)}>
+            + 새로운 프로젝트
+          </AddProjectBtn>
           <ProjectsListContainer>
             <ProjectListTitle>프로젝트</ProjectListTitle>
-
-            {/* project Read test */}
-            {/* {projects.map((project) => (
+            {projects.map((project) => (
               <ProjectList key={project.id}>{project.title}</ProjectList>
-            ))} */}
-
-            {/* use map to show all project of the user */}
-            {/* <ProjectList>
-              프로젝트 1
-            </ProjectList>
-            <ProjectList>
-              프로젝트 2
-            </ProjectList> */}
-            {/* use map to show all project of the user */}
+            ))}
           </ProjectsListContainer>
         </LeftCol>
         <ProjectDetailPage />
         {/* <ProjectCardsPage /> */}
         {/* <AddProjectPage /> */}
+
+        <ProjectCreateModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onCreate={async (name) => {
+            await createProjectModal(name);
+            setIsModalOpen(false);
+          }}
+        />
       </Contents>
     </Container>
   );
@@ -75,23 +88,8 @@ const LeftCol = styled.div`
 `;
 
 const ProjectListTitle = styled.div`
-  font-size: 16px;
+  font-size: 17px;
   margin-bottom: 30px;
-`;
-
-const ProjectList = styled.div`
-  padding: 12px 18px;
-  border-radius: 5.55px;
-  color: #fff;
-  background: rgba(217, 217, 217, 0.3);
-  height: 4.89vh;
-  font-size: 20px;
-  box-sizing: border-box;
-  width: 100%;
-  margin-top: 1.67vh;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
 `;
 
 const AddProjectBtn = styled.div`
@@ -113,4 +111,19 @@ const ProjectsListContainer = styled.div`
   width: 100%;
   height: 75vh;
   color: #fff;
+`;
+
+const ProjectList = styled.div`
+  padding: 10px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 5px;
+  background: rgba(217, 217, 217, 0.15);
+  color: #fff;
+  width: 100%;
+  min-height: 50px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  box-sizing: border-box;
 `;

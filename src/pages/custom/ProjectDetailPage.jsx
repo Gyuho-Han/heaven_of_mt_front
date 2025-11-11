@@ -6,6 +6,7 @@ import ImageTextInput from "./gamePages/inputTypes/ImageTextInput";
 import TextTextInput from "./gamePages/inputTypes/TextTextInput";
 import FourLetterInput from "./gamePages/inputTypes/FourLetterInput";
 import VerticalTextText from "./gamePages/inputTypes/VerticalTextText";
+import AddFirstGamePage from "./AddFirstGamePage";
 
 const ProjectDetailPage = () => {
   const navigate = useNavigate();
@@ -77,14 +78,14 @@ const ProjectDetailPage = () => {
           </GameListTopRow>
           <GameComponentList>
             {/* use map to show all project of the user */}
-            <GameListComponent>
+            {/* <GameListComponent>
               <GameListIndex>1</GameListIndex>
               <GameListBadge>텔레스트레이션</GameListBadge>
             </GameListComponent>
             <GameListComponent>
               <GameListIndex>2</GameListIndex>
               <GameListBadge>인물퀴즈</GameListBadge>
-            </GameListComponent>
+            </GameListComponent> */}
             {/* use map to show all project of the user */}
           </GameComponentList>
         </GameList>
@@ -114,7 +115,8 @@ const ProjectDetailPage = () => {
         {/* <Textinput inputs={inputs} setInputs={setInputs} /> */}
         {/* <TextTextInput inputs={inputs} setInputs={setInputs} /> */}
         {/* <FourLetterInput inputs={inputs} setInputs={setInputs} /> */}
-        <VerticalTextText inputs={inputs} setInputs={setInputs} />
+        {/* <VerticalTextText inputs={inputs} setInputs={setInputs} /> */}
+        <AddFirstGamePage />
         {/* <ImageTextInput
           inputs={inputs}
           setInputs={setInputs}

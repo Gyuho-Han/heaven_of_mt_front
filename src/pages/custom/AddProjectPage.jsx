@@ -3,21 +3,19 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { createProject } from "../../firebase/Projects";
 import { useAuth } from '../../GoogleAuthManager';
+import ProjectCreateModal from '../../components/ProjectCreateModal';
 
 
 const AddProjectPage = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projectName, setProjectName] = useState('');
   const { user } = useAuth();
 
-  const createProjectModal = async () => {
+  const createProjectModal = async (name) => {
     await createProject({
       userId: user.uid,
-      title: projectName,
+      title: name,
     });
-
-    setProjectName("");
   };
 
   // This page shows an empty-state (no projects) UI.
@@ -42,32 +40,14 @@ const AddProjectPage = () => {
           </EmptyState>
         </ProjectDetailContainer>
 
-        {isModalOpen && (
-          <ModalOverlay onClick={() => setIsModalOpen(false)}>
-            <ModalBox onClick={(e) => e.stopPropagation()}>
-              <CloseButton onClick={() => setIsModalOpen(false)}>×</CloseButton>
-              <ModalTitle>새로운 프로젝트 만들기</ModalTitle>
-              <ModalLabel>프로젝트 이름</ModalLabel>
-              <ModalInput
-                type="text"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder="새로운 프로젝트 명"
-              />
-              <ModalActions>
-                <CreateBtn
-                  onClick={async () => {
-                    // TODO: Hook up actual project creation logic
-                    await createProjectModal();
-                    setIsModalOpen(false);
-                  }}
-                >
-                  만들기
-                </CreateBtn>
-              </ModalActions>
-            </ModalBox>
-          </ModalOverlay>
-        )}
+        <ProjectCreateModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onCreate={async (name) => {
+            await createProjectModal(name);
+            setIsModalOpen(false);
+          }}
+        />
       </Container>
     </RightCol>
   );
@@ -204,92 +184,3 @@ const Profile = styled.span`
 `;
 
 // Removed game list and picker styles for the empty state UI
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-`;
-
-const ModalBox = styled.div`
-  position: relative;
-  width: 440px;
-  height: 200px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  padding: 35px 28px 30px 28px;
-  color: #000;
-  border-radius: 5px;
-  background: #F8F9FF;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: #B4B7C2;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-  &:hover { color: #D0D0D0; }
-`;
-
-const ModalTitle = styled.div`
-  font-size: 20px;
-  font-weight: 400;
-  margin: 4px 30px 30px 4px;
-`;
-
-const ModalLabel = styled.div`
-  margin: 8px 0 15px 4px;
-  color: #000;
-  font-size: 16px;
-  opacity: 0.75;
-`;
-
-const ModalInput = styled.input`
-  width: 100%;
-  height: 46px;
-  box-sizing: border-box;
-  font-family: DungGeunMo;
-  padding: 12px 14px;
-  background: #fff;
-  color: #000;
-  outline: none;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid #FF76E1;
-
-    &::placeholder {
-    color: #636161;
-    font-family: DungGeunMo;
-    font-size: 16px;
-    }
-`;
-
-const ModalActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-`;
-
-const CreateBtn = styled.button`
-  border: none;
-  color: #000;
-  padding: 11px 20px;
-  margin-top: 15px;
-
-  cursor: pointer;
-  border-radius: 5px;
-  background: #FF76E1;
-  font-family: DungGeunMo;
-  font-size: 16px;
-`;
