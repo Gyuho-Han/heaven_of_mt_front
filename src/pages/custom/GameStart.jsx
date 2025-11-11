@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { readGamesInProject } from '../../firebase/Games';
+import { readProject } from '../../firebase/Projects';
 import styled from 'styled-components';
 import { gameData } from '../../gameData';
 import Onboarding from '../../components/onboarding/Onboarding';
@@ -18,6 +19,7 @@ const GameStart = () => {
   const navigate = useNavigate();
   const { projectId } = useParams();
   const [filteredGameData, setFilteredGameData] = useState([]);
+  const [projectTitle, setProjectTitle] = useState('');
   // store or log the projectId for downstream pages/components if needed
   useEffect(() => {
     if (projectId) {
@@ -38,8 +40,21 @@ const GameStart = () => {
       if (!projectId) return;
       try {
         const games = await readGamesInProject(projectId);
+        // games: [{ id, gameType, ... }]
+        const gamesByType = {};
+        games.forEach((g) => {
+          if (!gamesByType[g.gameType]) gamesByType[g.gameType] = [];
+          gamesByType[g.gameType].push(g.id || g.id === 0 ? g.id : null);
+        });
+
         const types = new Set(games.map((g) => g.gameType));
-        const filtered = gameData.filter((d) => types.has(d.name));
+        const filtered = gameData
+          .filter((d) => types.has(d.name))
+          .map((d) => ({
+            ...d,
+            gameIds: gamesByType[d.name] || [],
+          }));
+
         if (mounted) {
           setFilteredGameData(filtered);
           // selectedGame 인덱스가 범위를 벗어나면 0으로 리셋
@@ -52,6 +67,31 @@ const GameStart = () => {
     load();
     return () => {
       mounted = false;
+    };
+  }, [projectId]);
+
+  useEffect(() => {
+    if (!projectId) {
+      setProjectTitle('');
+      return;
+    }
+
+    let cancelled = false;
+    const loadProject = async () => {
+      try {
+        const project = await readProject(projectId);
+        if (!cancelled) {
+          setProjectTitle(project?.title || '');
+        }
+      } catch (err) {
+        console.error('프로젝트 정보 불러오기 실패:', err);
+        if (!cancelled) setProjectTitle('');
+      }
+    };
+
+    loadProject();
+    return () => {
+      cancelled = true;
     };
   }, [projectId]);
   const focusRef = useRef(null);
@@ -81,7 +121,15 @@ const GameStart = () => {
     } else if (e.key === 'Enter') {
       sessionStorage.setItem('lastSelectedGameIndex', String(selectedGame));
       const target = (filteredGameData.length ? filteredGameData : gameData)[selectedGame];
-      if (target) navigate(target.route);
+      if (target) {
+        if (projectId && target.gameIds && target.gameIds.length) {
+          const gameIdToUse = target.gameIds[0];
+          navigate(`/custom${target.route}/${gameIdToUse}`);
+        } else {
+          const routeToNavigate = projectId ? `/custom${target.route}` : target.route;
+          navigate(routeToNavigate);
+        }
+      }
     }
   };
 
@@ -98,6 +146,7 @@ const GameStart = () => {
           alt="title"
           onClick={() => navigate('/')}
         />
+        {projectTitle && <ProjectTitle>{projectTitle}</ProjectTitle>}
       </Header>
       <Content>
         {filteredGameData.length ? (
@@ -110,7 +159,15 @@ const GameStart = () => {
               onConfirmSelected={() => {
                 sessionStorage.setItem('lastSelectedGameIndex', String(selectedGame));
                 const target = filteredGameData[selectedGame];
-                if (target) navigate(target.route);
+                if (target) {
+                  if (projectId && target.gameIds && target.gameIds.length) {
+                    const gameIdToUse = target.gameIds[0];
+                    navigate(`/custom${target.route}/${gameIdToUse}`);
+                  } else {
+                    const routeToNavigate = projectId ? `/custom${target.route}` : target.route;
+                    navigate(routeToNavigate);
+                  }
+                }
               }}
             />
           </>
@@ -139,16 +196,26 @@ const Container = styled.div`
 
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 3.3vw;
   padding: 5.6vh 0 0 0; /* match Flutter top spacing */
   margin-bottom: 3.2vh;
+  margin-left: 8.5vw;
 `;
 
 const TitleImage = styled.img`
   width: 16vw;
   cursor: pointer;
-  margin-left: 8.5vw;
+`;
+
+const ProjectTitle = styled.span`
+  font-family: 'DungGeunMo', sans-serif;
+  font-size: 1.8vw;
+  color: #fff;
+  max-width: 24vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Content = styled.div`
