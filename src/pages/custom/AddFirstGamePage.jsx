@@ -9,11 +9,11 @@ const FourLetterInput = ({ onSelect }) => {
       <Title>첫번째 게임을 선택해주세요</Title>
       <Columns>
         <LeftCol>
-          <GameTypeBadge onClick={() => onSelect?.("네글자게임")}>
-            네글자게임
+          <GameTypeBadge onClick={() => onSelect?.("네글자퀴즈")}>
+            네글자퀴즈
           </GameTypeBadge>
-          <GameTypeBadge onClick={() => onSelect?.("노래초성게임")}>
-            노래초성게임
+          <GameTypeBadge onClick={() => onSelect?.("노래초성퀴즈")}>
+            노래초성퀴즈
           </GameTypeBadge>
           <GameTypeBadge onClick={() => onSelect?.("단어텔레파시")}>
             단어텔레파시

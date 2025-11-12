@@ -1,11 +1,41 @@
-// 노래초성게임
+// 노래초성퀴즈
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
 const TextTextInput = ({ inputs, setInputs, onSave, gameType }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState({});
+  const inputRefs = useRef({});
+
+  const setRef = (id, field) => (el) => {
+    if (!inputRefs.current[id]) inputRefs.current[id] = {};
+    inputRefs.current[id][field] = el;
+  };
   const handleAddInput = () => {
+    // Require all existing rows to be fully filled before adding a new one
+    const nextErrors = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
+      const t = (item.title || '').trim();
+      const a = (item.artist || '').trim();
+      if (!t) {
+        nextErrors[`${item.id}.title`] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, field: 'title' };
+      }
+      if (!a) {
+        nextErrors[`${item.id}.artist`] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, field: 'artist' };
+      }
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      if (firstInvalid && inputRefs.current[firstInvalid.id]?.[firstInvalid.field]) {
+        inputRefs.current[firstInvalid.id][firstInvalid.field].focus();
+      }
+      return;
+    }
+
     setInputs((prev) => [
       ...prev,
       { id: prev.length + 1, title: "", artist: "" },
@@ -18,6 +48,16 @@ const TextTextInput = ({ inputs, setInputs, onSave, gameType }) => {
         item.id === id ? { ...item, [field]: newValue } : item
       )
     );
+    // Clear error for this field when user types something
+    setErrors((prev) => {
+      const key = `${id}.${field}`;
+      if (prev[key] && String(newValue).trim().length > 0) {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      }
+      return prev;
+    });
   };
 
   const handleDelete = (idx) => {
@@ -25,10 +65,37 @@ const TextTextInput = ({ inputs, setInputs, onSave, gameType }) => {
       prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, id: i + 1 }))
     );
   };
+
+  const handleSave = async () => {
+    // Validate that both title and artist are present for every item
+    const nextErrors = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
+      const t = (item.title || '').trim();
+      const a = (item.artist || '').trim();
+      if (!t) {
+        nextErrors[`${item.id}.title`] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, field: 'title' };
+      }
+      if (!a) {
+        nextErrors[`${item.id}.artist`] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, field: 'artist' };
+      }
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      // Focus first invalid input
+      if (firstInvalid && inputRefs.current[firstInvalid.id]?.[firstInvalid.field]) {
+        inputRefs.current[firstInvalid.id][firstInvalid.field].focus();
+      }
+      return;
+    }
+    await onSave?.();
+  };
   return (
     <InputContainer>
       <InputTopRow>
-        <GameTypeBadge>{gameType || '노래초성게임'}</GameTypeBadge>
+        <GameTypeBadge>{gameType || '노래초성퀴즈'}</GameTypeBadge>
         <InfoIcon>i</InfoIcon>
         <EditBtn onClick={() => setIsEditing((v) => !v)}>
           {isEditing ? "완료" : "편집"}
@@ -47,6 +114,8 @@ const TextTextInput = ({ inputs, setInputs, onSave, gameType }) => {
                 <Input
                   placeholder="노래 제목을 입력해주세요"
                   value={item.title || ""}
+                  $error={!!errors[`${item.id}.title`]}
+                  ref={setRef(item.id, 'title')}
                   onChange={(e) =>
                     handleInputChange(item.id, "title", e.target.value)
                   }
@@ -54,6 +123,8 @@ const TextTextInput = ({ inputs, setInputs, onSave, gameType }) => {
                 <Input2
                   placeholder="노래 가수를 입력해주세요"
                   value={item.artist || ""}
+                  $error={!!errors[`${item.id}.artist`]}
+                  ref={setRef(item.id, 'artist')}
                   onChange={(e) =>
                     handleInputChange(item.id, "artist", e.target.value)
                   }
@@ -73,7 +144,7 @@ const TextTextInput = ({ inputs, setInputs, onSave, gameType }) => {
           <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
         )}
       </InputBoxesScrollArea>
-      <SaveBtn onClick={onSave}>저장</SaveBtn>
+      <SaveBtn onClick={handleSave}>저장</SaveBtn>
     </InputContainer>
   );
 };
@@ -119,6 +190,8 @@ const Input = styled.input`
   border-radius: 3px;
   background: rgba(160, 160, 160, 0.7);
   height: 30px;
+  border: 2px solid 
+    ${(p) => (p.$error ? '#ff3b30' : 'transparent')};
 
   font-family: DungGeunMo;
   font-size: 18px;
@@ -133,7 +206,7 @@ const Input = styled.input`
   }
 
   &:focus {
-    border: 3px solid gray;
+    border: 3px solid ${(p) => (p.$error ? '#ff3b30' : 'gray')};
     outline: none;
   }
 `;
@@ -159,7 +232,8 @@ const Input2 = styled.input`
   min-height: 30px;
 
   border-radius: 3px;
-  border: 1px solid #d9d9d9;
+  border: 2px solid 
+    ${(p) => (p.$error ? '#ff3b30' : '#d9d9d9')};
   background: rgba(255, 255, 255, 0.8);
 
   font-family: DungGeunMo;
@@ -175,7 +249,7 @@ const Input2 = styled.input`
   }
 
   &:focus {
-    border: 3px solid gray;
+    border: 3px solid ${(p) => (p.$error ? '#ff3b30' : 'gray')};
     outline: none;
   }
 `;

@@ -76,7 +76,7 @@ export default CustomGameOver;
 const Container = styled.div`
   background-image: url('/images/feedback.gif');
   background-size: cover;
-  background-position: center top -190px;
+  
   height: 100vh;
   width: 100vw;
   display: flex;

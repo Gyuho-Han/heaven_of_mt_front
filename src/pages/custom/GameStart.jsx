@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { readGamesInProject } from "../../firebase/Games";
+import { readQuestions } from "../../firebase/Questions";
 import { readProject } from "../../firebase/Projects";
 import styled from "styled-components";
 import { gameData } from "../../gameData";
@@ -20,6 +21,12 @@ const GameStart = () => {
   const { projectId } = useParams();
   const [filteredGameData, setFilteredGameData] = useState([]);
   const [projectTitle, setProjectTitle] = useState("");
+  const normalizeType = (t) => {
+    if (t === "노래초성게임") return "노래초성퀴즈";
+    if (t === "네글자게임") return "네글자퀴즈";
+    if (t === "명대사 퀴즈") return "명대사퀴즈";
+    return t;
+  };
   // store or log the projectId for downstream pages/components if needed
   useEffect(() => {
     if (projectId) {
@@ -40,20 +47,46 @@ const GameStart = () => {
       if (!projectId) return;
       try {
         const games = await readGamesInProject(projectId);
-        // games: [{ id, gameType, ... }]
-        const gamesByType = {};
-        games.forEach((g) => {
-          if (!gamesByType[g.gameType]) gamesByType[g.gameType] = [];
-          gamesByType[g.gameType].push(g.id || g.id === 0 ? g.id : null);
+        // Filter out games that have zero questions
+        const withCounts = await Promise.all(
+          games.map(async (g) => {
+            try {
+              const qs = await readQuestions(g.id);
+              const hasMeaningful = (qs || []).some((q) => {
+                const qt = (q.questionText || "").trim();
+                const an = (q.answer || "").trim();
+                return qt.length > 0 || an.length > 0 || !!q.imgUrl;
+              });
+              return { game: g, hasData: hasMeaningful };
+            } catch (e) {
+              return { game: g, hasData: false };
+            }
+          })
+        );
+        // Keep only games with data
+        const nonEmptyGames = withCounts.filter((x) => x.hasData).map((x) => x.game);
+        // Sort to match project list index: by createdAt (seconds, then nanoseconds), then title, then id
+        const sorted = [...nonEmptyGames].sort((a, b) => {
+          const as = a.createdAt?.seconds ?? 0;
+          const bs = b.createdAt?.seconds ?? 0;
+          if (as !== bs) return as - bs;
+          const an = a.createdAt?.nanoseconds ?? 0;
+          const bn = b.createdAt?.nanoseconds ?? 0;
+          if (an !== bn) return an - bn;
+          const at = (a.title || a.id || '').localeCompare(b.title || b.id || '');
+          if (at !== 0) return at;
+          return (a.id || '').localeCompare(b.id || '');
         });
 
-        const types = new Set(games.map((g) => g.gameType));
-        const filtered = gameData
-          .filter((d) => types.has(d.name))
-          .map((d) => ({
-            ...d,
-            gameIds: gamesByType[d.name] || [],
-          }));
+        // Expand into per-instance entries so same type games all appear
+        const filtered = sorted
+          .map((g) => {
+            const t = normalizeType(g.gameType);
+            const desc = gameData.find((d) => d.name === t);
+            if (!desc) return null;
+            return { ...desc, gameId: g.id };
+          })
+          .filter(Boolean);
 
         if (mounted) {
           setFilteredGameData(filtered);
@@ -133,14 +166,19 @@ const GameStart = () => {
         selectedGame
       ];
       if (target) {
-        if (projectId && target.gameIds && target.gameIds.length) {
-          const gameIdToUse = target.gameIds[0];
-          navigate(`/custom${target.route}/${gameIdToUse}`);
+        if (projectId && target.gameId) {
+          const gameIdToUse = target.gameId;
+          if (target.name === "노래초성퀴즈") navigate(`/custom/musictitle/${gameIdToUse}`);
+          else navigate(`/custom${target.route}/${gameIdToUse}`);
         } else {
           const routeToNavigate = projectId
             ? `/custom${target.route}`
             : target.route;
-          navigate(routeToNavigate);
+          if (projectId && target.name === "노래초성퀴즈") {
+            navigate(`/custom/musictitle`);
+          } else {
+            navigate(routeToNavigate);
+          }
         }
       }
     }
@@ -175,14 +213,19 @@ const GameStart = () => {
                 );
                 const target = filteredGameData[selectedGame];
                 if (target) {
-                  if (projectId && target.gameIds && target.gameIds.length) {
-                    const gameIdToUse = target.gameIds[0];
-                    navigate(`/custom${target.route}/${gameIdToUse}`);
+                  if (projectId && target.gameId) {
+                    const gameIdToUse = target.gameId;
+                    if (target.name === "노래초성퀴즈") navigate(`/custom/musictitle/${gameIdToUse}`);
+                    else navigate(`/custom${target.route}/${gameIdToUse}`);
                   } else {
                     const routeToNavigate = projectId
                       ? `/custom${target.route}`
                       : target.route;
-                    navigate(routeToNavigate);
+                    if (projectId && target.name === "노래초성퀴즈") {
+                      navigate(`/custom/musictitle`);
+                    } else {
+                      navigate(routeToNavigate);
+                    }
                   }
                 }
               }}
@@ -203,7 +246,6 @@ export default GameStart;
 const Container = styled.div`
   background-image: url("/images/background_final.png");
   background-size: cover;
-  background-position: center top -120px;
   width: 100vw;
   height: 100vh;
   display: flex;

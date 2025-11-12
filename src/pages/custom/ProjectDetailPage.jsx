@@ -72,14 +72,22 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
   // inputs 상태는 이 페이지에서 관리하고, 조작 함수는 하위 컴포넌트로 전달해 사용합니다.
 
   const defaultInputsForType = (type) => {
-    if (type === "노래초성게임") return [{ id: 1, title: "", artist: "" }];
+    if (type === "노래초성퀴즈") return [{ id: 1, title: "", artist: "" }];
     if (type === "대표게임") return [{ id: 1, description: "", mission: "" }];
     // 네글자, 텍스트형, 이미지형은 기본 value 하나로 시작
     return [{ id: 1, value: "" }];
   };
 
   const selectedGame = games.find((g) => g.id === selectedGameId) || games[0];
-  const selectedType = selectedGame?.gameType;
+  const selectedTypeRaw = selectedGame?.gameType;
+  const selectedType =
+    selectedTypeRaw === "노래초성게임"
+      ? "노래초성퀴즈"
+      : selectedTypeRaw === "네글자게임"
+      ? "네글자퀴즈"
+      : selectedTypeRaw === "명대사 퀴즈"
+      ? "명대사퀴즈"
+      : selectedTypeRaw;
   const currentInputs = selectedGameId
     ? inputsByGame[selectedGameId] ?? defaultInputsForType(selectedType)
     : [];
@@ -152,7 +160,7 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
         }, {});
         setInputsByGame((prev) => ({ ...prev, [selectedGameId]: inputs }));
         setImagesByGame((prev) => ({ ...prev, [selectedGameId]: imgs }));
-      } else if (selectedType === "노래초성게임") {
+      } else if (selectedType === "노래초성퀴즈") {
         const inputs = sorted.map((q, i) => ({
           id: q.orderIndex ?? i + 1,
           title: (q.questionText && q.questionText.trim() !== "") ? q.questionText : "",
@@ -220,7 +228,7 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
           const prev = byIndex.get(orderIndex);
           if (prev?.imgUrl) imgUrl = prev.imgUrl;
         }
-      } else if (type === "노래초성게임") {
+      } else if (type === "노래초성퀴즈") {
         // 두 텍스트: 제목, 가수
         questionText = (item.title && String(item.title).trim()) || " ";
         answer = (item.artist && String(item.artist).trim()) || " ";
@@ -352,7 +360,7 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
             <PickerList>
               {[
                 "네글자퀴즈",
-                "노래초성게임",
+                "노래초성퀴즈",
                 "단어텔레파시",
                 "대표게임",
                 "디스코",
@@ -382,7 +390,7 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
                     onSave={saveQuestionsForSelected}
                   />
                 );
-              if (type === "노래초성게임")
+              if (type === "노래초성퀴즈")
                 return (
                   <TextTextInput
                     gameType={type}

@@ -74,7 +74,7 @@ const MovieGamePage = () => {
     toPrefetch.forEach((c) => {
       const img = new Image();
       img.decoding = "async";
-      img.src = c.name; // public/movie 로컬 자산
+      img.src = encodeURI(c.name); // public/movie 로컬 자산
     });
   }, [cards, currentCardIndex]);
 
@@ -127,7 +127,7 @@ const MovieGamePage = () => {
               <AnswerText>{cards[currentCardIndex].answer}</AnswerText>
             ) : (
               <CardImage
-                src={cards[currentCardIndex].name}
+                src={encodeURI(cards[currentCardIndex].name)}
                 alt="movie scene"
                 decoding="async"
                 fetchpriority="high"

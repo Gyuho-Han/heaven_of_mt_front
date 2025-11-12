@@ -74,7 +74,7 @@ const PersonGamePage = () => {
     toPrefetch.forEach((c) => {
       const img = new Image();
       img.decoding = "async";
-      img.src = c.name; // public/person 로컬 자산
+      img.src = encodeURI(c.name); // public/person 로컬 자산
     });
   }, [cards, currentCardIndex]);
 
@@ -123,7 +123,7 @@ const PersonGamePage = () => {
         </NavButton>
         <CardContainer>
           <Card
-            src={cards[currentCardIndex].name}
+            src={encodeURI(cards[currentCardIndex].name)}
             alt="person"
             decoding="async"
             fetchpriority="high"

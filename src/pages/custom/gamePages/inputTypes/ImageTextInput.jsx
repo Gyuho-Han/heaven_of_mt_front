@@ -1,6 +1,6 @@
 // 인물퀴즈, 명대사 퀴즈
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
 const ImageTextInput = ({
@@ -13,6 +13,8 @@ const ImageTextInput = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [missing, setMissing] = useState({}); // { [id]: true } when image required but missing
+  const [textErrors, setTextErrors] = useState({}); // { [id]: true } when answer text missing
+  const inputRefs = useRef({}); // { [id]: { file: ref, text: ref } }
   const getNameFromUrl = (url = "") => {
     try {
       const noQuery = url.split('?')[0];
@@ -23,7 +25,44 @@ const ImageTextInput = ({
       return '이미지';
     }
   };
+  const setFileRef = (id) => (el) => {
+    if (!inputRefs.current[id]) inputRefs.current[id] = {};
+    inputRefs.current[id].file = el;
+  };
+
+  const setTextRef = (id) => (el) => {
+    if (!inputRefs.current[id]) inputRefs.current[id] = {};
+    inputRefs.current[id].text = el;
+  };
+
   const handleAddInput = () => {
+    // Require existing rows to have both image and non-empty text
+    const imgMissing = {};
+    const txtMissing = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
+      const img = images?.[item.id];
+      const hasImage = !!(img?.file || img?.previewUrl);
+      const txt = (item.value || '').trim();
+      if (!hasImage) {
+        imgMissing[item.id] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, kind: 'file' };
+      }
+      if (!txt) {
+        txtMissing[item.id] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, kind: 'text' };
+      }
+    }
+    setMissing(imgMissing);
+    setTextErrors(txtMissing);
+    if (firstInvalid) {
+        const ref = inputRefs.current[firstInvalid.id]?.[firstInvalid.kind];
+        if (ref) {
+          if (firstInvalid.kind === 'file' && typeof ref.click === 'function') ref.click();
+          else if (typeof ref.focus === 'function') ref.focus();
+        }
+        return;
+    }
     setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
   };
 
@@ -31,6 +70,15 @@ const ImageTextInput = ({
     setInputs((prev) =>
       prev.map((item) => (item.id === id ? { ...item, value: newValue } : item))
     );
+    // clear text error on valid input
+    if ((newValue || '').trim().length > 0) {
+      setTextErrors((prev) => {
+        if (!prev[id]) return prev;
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+    }
   };
 
   const handleImageChange = (id, file) => {
@@ -46,16 +94,33 @@ const ImageTextInput = ({
   };
 
   const handleSave = () => {
-    // Validate: every row must have an image file
-    const need = (inputs || []).reduce((acc, item) => {
+    // Validate: every row must have an image and non-empty text
+    const imgMissing = {};
+    const txtMissing = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
       const img = images?.[item.id];
-      const has = !!(img?.file || img?.previewUrl);
-      if (!has) acc[item.id] = true;
-      return acc;
-    }, {});
-    const hasMissing = Object.keys(need).length > 0;
-    setMissing(need);
-    if (hasMissing) return; // do not call onSave if any image missing
+      const hasImage = !!(img?.file || img?.previewUrl);
+      const txt = (item.value || '').trim();
+      if (!hasImage) {
+        imgMissing[item.id] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, kind: 'file' };
+      }
+      if (!txt) {
+        txtMissing[item.id] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, kind: 'text' };
+      }
+    }
+    setMissing(imgMissing);
+    setTextErrors(txtMissing);
+    if (firstInvalid) {
+      const ref = inputRefs.current[firstInvalid.id]?.[firstInvalid.kind];
+      if (ref) {
+        if (firstInvalid.kind === 'file' && typeof ref.click === 'function') ref.click();
+        else if (typeof ref.focus === 'function') ref.focus();
+      }
+      return;
+    }
     onSave?.();
   };
 
@@ -119,6 +184,7 @@ const ImageTextInput = ({
                   id={`image-file-${item.id}`}
                   type="file"
                   accept="image/*"
+                  ref={setFileRef(item.id)}
                   onChange={(e) =>
                     handleImageChange(item.id, e.target.files?.[0])
                   }
@@ -126,6 +192,8 @@ const ImageTextInput = ({
                 <Input
                   placeholder="해당 정답을 입력해주세요"
                   value={item.value ?? ''}
+                  $error={!!textErrors[item.id]}
+                  ref={setTextRef(item.id)}
                   onChange={(e) => handleInputChange(item.id, e.target.value)}
                 />
               </InputBox>
@@ -208,7 +276,7 @@ const Input = styled.input`
   min-height: 30px;
 
   border-radius: 3px;
-  border: 1px solid #d9d9d9;
+  border: 2px solid ${(p) => (p.$error ? '#ff3b30' : '#d9d9d9')};
   background: rgba(255, 255, 255, 0.8);
 
   font-family: DungGeunMo;
@@ -226,7 +294,7 @@ const Input = styled.input`
   }
 
   &:focus {
-    border: 3px solid gray;
+    border: 3px solid ${(p) => (p.$error ? '#ff3b30' : 'gray')};
     outline: none;
   }
 `;

@@ -1,11 +1,31 @@
 // 네글자퀴즈
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
 const FourLetterInput = ({ inputs, setInputs, onSave, gameType }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState({}); // { [id]: true }
+  const inputRefs = useRef({});
+
   const handleAddInput = () => {
+    // validate existing rows: require exactly 2 chars (after trim) before adding
+    const nextErrors = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
+      const v = (item.value || '').trim();
+      if (v.length !== 2) {
+        nextErrors[item.id] = true;
+        if (!firstInvalid) firstInvalid = item.id;
+      }
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      if (firstInvalid && inputRefs.current[firstInvalid]) {
+        inputRefs.current[firstInvalid].focus?.();
+      }
+      return;
+    }
     setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
   };
 
@@ -14,6 +34,16 @@ const FourLetterInput = ({ inputs, setInputs, onSave, gameType }) => {
     setInputs((prev) =>
       prev.map((item) => (item.id === id ? { ...item, value: limited } : item))
     );
+    const trimmedLen = (limited || '').trim().length;
+    setErrors((prev) => {
+      const next = { ...prev };
+      if (trimmedLen === 2) {
+        if (next[id]) delete next[id];
+      } else {
+        next[id] = true;
+      }
+      return next;
+    });
   };
 
   const handleDelete = (idx) => {
@@ -36,6 +66,8 @@ const FourLetterInput = ({ inputs, setInputs, onSave, gameType }) => {
                 <Input
                   maxLength={2}
                   value={item.value || ""}
+                  $error={!!errors[item.id]}
+                  ref={(el) => (inputRefs.current[item.id] = el)}
                   onChange={(e) => handleValueChange(item.id, e.target.value)}
                 />
                 <EmptySquare />
@@ -55,7 +87,25 @@ const FourLetterInput = ({ inputs, setInputs, onSave, gameType }) => {
           <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
         )}
       </InputBoxesScrollArea>
-      <SaveBtn onClick={onSave}>저장</SaveBtn>
+      <SaveBtn onClick={() => {
+        const nextErrors = {};
+        let firstInvalid = null;
+        for (const item of inputs) {
+          const v = (item.value || '').trim();
+          if (v.length !== 2) {
+            nextErrors[item.id] = true;
+            if (!firstInvalid) firstInvalid = item.id;
+          }
+        }
+        if (Object.keys(nextErrors).length > 0) {
+          setErrors(nextErrors);
+          if (firstInvalid && inputRefs.current[firstInvalid]) {
+            inputRefs.current[firstInvalid].focus?.();
+          }
+          return;
+        }
+        onSave?.();
+      }}>저장</SaveBtn>
     </InputContainer>
   );
 };
@@ -109,7 +159,7 @@ const Input = styled.input`
 
   background: transparent;
   border: none;
-  border-bottom: 1px solid #fff;
+  border-bottom: ${(p) => (p.$error ? '2px solid #ff3b30' : '1px solid #fff')};
   border-radius: 0;
   padding: 2px 0;
 
@@ -122,7 +172,7 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid ${(p) => (p.$error ? '#ff3b30' : '#fff')};
   }
 `;
 
