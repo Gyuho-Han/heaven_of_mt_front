@@ -65,8 +65,7 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
   }, [showPicker]);
 
   const handlePlayClick = () => {
-    // hardcoded project id for testing as requested
-    const projectId = "uaKEmzWPK6ZNhWGNgm9s";
+    if (!projectId) return;
     navigate(`/customhome/gamestart/${projectId}`);
   };
 

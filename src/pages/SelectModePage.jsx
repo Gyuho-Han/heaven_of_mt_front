@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import ReadyPage from './random/ReadyPage';
-import { useAuth } from '../GoogleAuthManager';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import ReadyPage from "./random/ReadyPage";
+import { useAuth } from "../GoogleAuthManager";
 
 const SelectModePage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -19,10 +19,10 @@ const SelectModePage = () => {
       setWindowHeight(window.innerHeight);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -37,7 +37,7 @@ const SelectModePage = () => {
   useEffect(() => {
     if (user && isPopUpShow) {
       setisPopUpShow(false);
-      navigate('/customhome');
+      navigate("/customhome");
     }
   }, [user, isPopUpShow, navigate]);
 
@@ -47,7 +47,7 @@ const SelectModePage = () => {
         <TitleImage
           src="/images/title.png"
           alt="title"
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
         />
       </Header>
       <SelectTitleRow>
@@ -56,7 +56,7 @@ const SelectModePage = () => {
         <SelectTitleIcon src="/images/right_mode_select.svg" />
       </SelectTitleRow>
       <Content>
-        <SelectCard onClick={() => navigate('/random_home')}>
+        <SelectCard onClick={() => navigate("/random_home")}>
           <PageBtnIcon
             src="/images/randomPageImageDice.svg"
             alt="RandomPageIcon"
@@ -66,10 +66,7 @@ const SelectModePage = () => {
           <ModeDesc>진행하고 싶을때!</ModeDesc>
         </SelectCard>
         <SelectCard onClick={() => setisPopUpShow(true)}>
-          <PageBtnIcon
-            src="/images/customPageImage.svg"
-            alt="customPageIcon"
-          />
+          <PageBtnIcon src="/images/customPageImage.svg" alt="customPageIcon" />
           <ModeTitle>Custom</ModeTitle>
           <ModeDesc>내가 원하는 정답을 바탕으로</ModeDesc>
           <ModeDesc>게임을 진행하고 싶을때!</ModeDesc>
@@ -103,7 +100,7 @@ const LoginPopUp = ({ onClose, onGoogleLogin }) => {
         <PopUpContent>로그인이 필요해요</PopUpContent>
 
         <GoogleLoginButton onClick={handleGoogleLogin}>
-          <GoogleImage src="/public/googlelogo.png" />
+          <GoogleImage src="/googlelogo.png" />
           <GoogleText>구글 로그인</GoogleText>
         </GoogleLoginButton>
         <br />
@@ -115,7 +112,7 @@ const LoginPopUp = ({ onClose, onGoogleLogin }) => {
 export default SelectModePage;
 
 const Container = styled.div`
-  background-image: url('/images/home.gif');
+  background-image: url("/images/home.gif");
   background-size: cover;
   height: 100vh;
   display: flex;
@@ -161,7 +158,7 @@ const SelectModeTitle = styled.span`
   display: inline-flex;
   align-items: center;
 
-  background: linear-gradient(0deg, #FF00B8 -5.07%, #FFC8F0 100%);
+  background: linear-gradient(0deg, #ff00b8 -5.07%, #ffc8f0 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -191,7 +188,6 @@ const ModeTitle = styled.div`
   line-height: normal;
   letter-spacing: 3.72px;
   text-align: center;
-  margin-top: 50px;
   margin-bottom: 12px;
 `;
 
@@ -216,8 +212,8 @@ const Content = styled.div`
 `;
 
 const SelectCard = styled.div`
-  width: 410px; 
-  height: 370px; 
+  width: 410px;
+  height: 370px;
 
   box-sizing: border-box;
   display: flex;
@@ -227,25 +223,41 @@ const SelectCard = styled.div`
 
   padding: clamp(12px, 2vw, 24px);
   border-radius: 19.354px;
-  border: 0.968px solid rgba(166, 166, 166, 0.50);
-  background: linear-gradient(0deg, rgba(242, 244, 246, 0.75) 0%, rgba(242, 244, 246, 0.75) 100%),
-              linear-gradient(180deg, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0.00) 100%);
+  border: 0.968px solid rgba(166, 166, 166, 0.5);
+  background: linear-gradient(
+      0deg,
+      rgba(242, 244, 246, 0.75) 0%,
+      rgba(242, 244, 246, 0.75) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
   backdrop-filter: blur(1.935393214225769px);
   color: #000;
   cursor: pointer;
 
   &:hover {
-    background: linear-gradient(0deg, rgba(255, 98, 211, 0.65) 0%, rgba(255, 98, 211, 0.65) 100%),
-                linear-gradient(180deg, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0.00) 100%);
-    color: #FFF;
+    background: linear-gradient(
+        0deg,
+        rgba(255, 98, 211, 0.65) 0%,
+        rgba(255, 98, 211, 0.65) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0) 100%
+      );
+    color: #fff;
   }
 `;
 
 const PopUpOverlay = styled.div`
-position: fixed;
+  position: fixed;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7); 
+  background: rgba(0, 0, 0, 0.7);
   z-index: 1000;
   display: flex;
   justify-content: center;
@@ -270,14 +282,14 @@ const GoogleLoginButton = styled.button`
   background-color: white;
   width: 27.3vw;
   height: 3.7vw;
-  border: 1px solid #D9D9D9;
+  border: 1px solid #d9d9d9;
   border-radius: 3.88px;
-  display: flex; 
+  display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
   font-family: DungGeunMo;
-  margin: 50px 0 50px 0px;  
+  margin: 50px 0 50px 0px;
   &:hover {
     background: #f8f9fa;
   }
@@ -286,8 +298,8 @@ const GoogleLoginButton = styled.button`
 const GoogleImage = styled.img`
   width: 22.9px;
   height: 22.9px;
-  position: absolute; 
-  left: 20px; 
+  position: absolute;
+  left: 20px;
 `;
 
 const GoogleText = styled.span`
