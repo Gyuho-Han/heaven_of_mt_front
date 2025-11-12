@@ -29,12 +29,12 @@ const Picker = ({ data, selectedIndex, onSelect, onConfirmSelected }) => {
     const firstItem = el.querySelector('[data-item]');
     if (!firstItem) return;
 
-    // 아이템 블록 높이 = 실제 렌더 높이 + margin
+    // 아이템 간 간격은 margin 대신 row-gap으로 관리하므로
+    // 블록 높이 = 아이템 높이 + 부모의 row-gap
     const rect = firstItem.getBoundingClientRect();
-    const cs = window.getComputedStyle(firstItem);
-    const mt = parseFloat(cs.marginTop) || 0;
-    const mb = parseFloat(cs.marginBottom) || 0;
-    const itemBlockH = rect.height + mt + mb;
+    const listCS = window.getComputedStyle(el);
+    const rowGap = parseFloat(listCS.rowGap) || 0;
+    const itemBlockH = rect.height + rowGap;
 
     itemHeightRef.current = itemBlockH;
 
@@ -356,6 +356,7 @@ const List = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  row-gap: 16px;
   /* snap은 JS로 제어하므로 CSS 스냅 비활성화 (충돌/미세 떨림 방지) */
   /* scroll-snap-type: y proximity; */
   /* Ensure smooth/natural scroll on iOS/iPadOS */
@@ -378,7 +379,7 @@ const Item = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 8px 0;                 /* 간격 */
+  /* 간격은 부모의 row-gap 사용 */
   scroll-snap-align: center;
 `;
 

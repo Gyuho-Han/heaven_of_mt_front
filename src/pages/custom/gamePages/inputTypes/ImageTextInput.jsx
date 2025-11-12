@@ -1,9 +1,28 @@
 // 인물퀴즈, 명대사 퀴즈
 
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-const ImageTextInput = ({ inputs, setInputs, images = {}, setImages }) => {
+const ImageTextInput = ({
+  inputs,
+  setInputs,
+  images = {},
+  setImages,
+  onSave,
+  gameType,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [missing, setMissing] = useState({}); // { [id]: true } when image required but missing
+  const getNameFromUrl = (url = "") => {
+    try {
+      const noQuery = url.split('?')[0];
+      const parts = noQuery.split('/');
+      const raw = parts[parts.length - 1] || '';
+      return decodeURIComponent(raw);
+    } catch (e) {
+      return '이미지';
+    }
+  };
   const handleAddInput = () => {
     setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
   };
@@ -22,13 +41,51 @@ const ImageTextInput = ({ inputs, setInputs, images = {}, setImages }) => {
       ...(prev || {}),
       [id]: { file, previewUrl },
     }));
+    // clear missing flag once user selects an image
+    setMissing((m) => ({ ...m, [id]: false }));
+  };
+
+  const handleSave = () => {
+    // Validate: every row must have an image file
+    const need = (inputs || []).reduce((acc, item) => {
+      const img = images?.[item.id];
+      const has = !!(img?.file || img?.previewUrl);
+      if (!has) acc[item.id] = true;
+      return acc;
+    }, {});
+    const hasMissing = Object.keys(need).length > 0;
+    setMissing(need);
+    if (hasMissing) return; // do not call onSave if any image missing
+    onSave?.();
+  };
+
+  // 편집 모드에서는 삭제만 허용
+
+  const handleDelete = (idx) => {
+    const prev = inputs;
+    const next = prev.filter((_, i) => i !== idx);
+    const reindexed = next.map((item, i) => ({ ...item, id: i + 1 }));
+    setInputs(reindexed);
+    if (setImages) {
+      setImages((prevImages) => {
+        const newImages = {};
+        next.forEach((item, i) => {
+          const oldId = item.id; // old id before reindex
+          const newId = i + 1;
+          if (prevImages?.[oldId]) newImages[newId] = prevImages[oldId];
+        });
+        return newImages;
+      });
+    }
   };
   return (
     <InputContainer>
       <InputTopRow>
-        <GameTypeBadge>인물퀴즈</GameTypeBadge>
+        <GameTypeBadge>{gameType || '인물퀴즈'}</GameTypeBadge>
         <InfoIcon>i</InfoIcon>
-        <EditBtn>편집</EditBtn>
+        <EditBtn onClick={() => setIsEditing((v) => !v)}>
+          {isEditing ? "완료" : "편집"}
+        </EditBtn>
       </InputTopRow>
       <InputTitles>
         <InputTitle>사진</InputTitle>
@@ -36,37 +93,57 @@ const ImageTextInput = ({ inputs, setInputs, images = {}, setImages }) => {
       </InputTitles>
       <InputBoxesScrollArea>
         <InputBoxesContainer>
-          {inputs.map((item) => (
-            <InputBox key={item.id}>
-              <InputIndex>{item.id}</InputIndex>
-              <ImageInputWrapper htmlFor={`image-file-${item.id}`}>
-                {images?.[item.id]?.file ? (
-                  <FileName title={images[item.id].file.name}>
-                    {images[item.id].file.name}
-                  </FileName>
-                ) : (
-                  <PlaceholderText>사진을 넣어주세요</PlaceholderText>
-                )}
-              </ImageInputWrapper>
-              <HiddenFileInput
-                id={`image-file-${item.id}`}
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  handleImageChange(item.id, e.target.files?.[0])
-                }
-              />
-              <Input
-                placeholder="해당 정답을 입력해주세요"
-                value={item.value}
-                onChange={(e) => handleInputChange(item.id, e.target.value)}
-              />
-            </InputBox>
+          {inputs.map((item, idx) => (
+            <Row key={item.id}>
+              <InputBox>
+                <InputIndex>{item.id}</InputIndex>
+                <ImageInputWrapper
+                  htmlFor={`image-file-${item.id}`}
+                  $error={!!missing[item.id]}
+                >
+                  {(() => {
+                    const img = images?.[item.id];
+                    if (img?.file) {
+                      return (
+                        <FileName title={img.file.name}>{img.file.name}</FileName>
+                      );
+                    }
+                    if (img?.previewUrl) {
+                      const name = getNameFromUrl(img.previewUrl);
+                      return <FileName title={name}>{name}</FileName>;
+                    }
+                    return <PlaceholderText>사진을 넣어주세요</PlaceholderText>;
+                  })()}
+                </ImageInputWrapper>
+                <HiddenFileInput
+                  id={`image-file-${item.id}`}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    handleImageChange(item.id, e.target.files?.[0])
+                  }
+                />
+                <Input
+                  placeholder="해당 정답을 입력해주세요"
+                  value={item.value ?? ''}
+                  onChange={(e) => handleInputChange(item.id, e.target.value)}
+                />
+              </InputBox>
+              {isEditing && (
+                <DeleteIcon
+                  src="/images/deleteBtn.svg"
+                  alt="delete"
+                  onClick={() => handleDelete(idx)}
+                />
+              )}
+            </Row>
           ))}
         </InputBoxesContainer>
-        <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+        {(inputs?.length ?? 0) < 20 && (
+          <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+        )}
       </InputBoxesScrollArea>
-      <SaveBtn>저장</SaveBtn>
+      <SaveBtn onClick={handleSave}>저장</SaveBtn>
     </InputContainer>
   );
 };
@@ -106,29 +183,29 @@ const InputBoxesContainer = styled.div`
 `;
 
 const InputBox = styled.div`
-  width: 100%;
+  flex: 1;
   padding: 5px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 30px 1fr 1fr; /* index | image | answer */
   align-items: center;
-  gap: 50px;
+  column-gap: 40px;
   border-radius: 3px;
   background: rgba(238, 238, 238, 0.2);
-  margin-top: 15px;
+  min-width: 0;
 `;
 
 const InputIndex = styled.div`
-  color: #fff;
-  margin-left: 13px;
   color: #dadadb;
   font-family: DungGeunMo;
   font-size: 24px;
+  width: 52px;
+  text-align: center;
 `;
 
 const Input = styled.input`
-  flex: 1;
+  width: 90%;
   height: 3.33vh;
   min-height: 30px;
-  padding-left: 25px;
 
   border-radius: 3px;
   border: 1px solid #d9d9d9;
@@ -137,7 +214,9 @@ const Input = styled.input`
   font-family: DungGeunMo;
   font-size: 18px;
   color: #25262d;
-  margin-right: 40px;
+  margin-right: 0;
+  min-width: 0; /* allow truncation when space tight */
+  max-width: 100%;
 
   &::placeholder {
     color: #636161;
@@ -214,8 +293,8 @@ const GameTypeBadge = styled.span`
   border-radius: 6px;
   background: rgba(255, 98, 211, 0.2);
   display: flex;
-  width: 14vw;
-  height: 7vh;
+  width: 11vw;
+  height: 5vh;
   padding: 12px;
   justify-content: center;
   align-items: center;
@@ -266,6 +345,10 @@ const ImageInputWrapper = styled.label`
   font-size: 18px; /* match text input font size */
   cursor: pointer;
   overflow: hidden;
+  border: ${(p) => (p.$error ? "2px solid #FF3B30" : "1px solid transparent")};
+  min-width: 0;
+  width: 93%;
+  box-sizing: border-box;
 `;
 
 const HiddenFileInput = styled.input`
@@ -283,4 +366,20 @@ const FileName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+`;
+
+const DeleteIcon = styled.img`
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  cursor: pointer;
+`;
+
+const Row = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  min-width: 0;
 `;

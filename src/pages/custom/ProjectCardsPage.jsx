@@ -2,18 +2,11 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-const AddProjectPage = () => {
+const ProjectCardsPage = ({ projects = [], onAddProject, onRename, onDelete, onSelectProject }) => {
   const navigate = useNavigate();
-  const projects = [
-    { id: 1, name: "프로젝트 A" },
-    { id: 2, name: "프로젝트 B" },
-    { id: 3, name: "프로젝트 C" },
-    { id: 4, name: "프로젝트 D" },
-    { id: 5, name: "프로젝트 E" },
-    { id: 6, name: "프로젝트 F" },
-    { id: 7, name: "프로젝트 G" },
-  ];
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editingValue, setEditingValue] = useState("");
 
   return (
     <RightCol>
@@ -32,15 +25,33 @@ const AddProjectPage = () => {
         </Header>
         <ProjectDetailContainer onClick={() => setOpenMenuId(null)}>
           <CardGrid>
-            <AddCard onClick={() => navigate("/custom/add")}>
+            <AddCard onClick={() => onAddProject?.()}>
               <AddIcon>
                 <Plus>+</Plus>
               </AddIcon>
             </AddCard>
             {projects.map((p) => (
-              <ProjectCard key={p.id}>
+              <ProjectCard key={p.id} onClick={() => onSelectProject?.(p.id)}>
                 <CardContent>
-                  <ProjectName title={p.name}>{p.name}</ProjectName>
+                  {editingId === p.id ? (
+                    <EditInput
+                      autoFocus
+                      value={editingValue}
+                      onChange={(e) => setEditingValue(e.target.value)}
+                      onKeyDown={async (e) => {
+                        if (e.key === 'Enter') {
+                          const name = editingValue.trim();
+                          if (name) await onRename?.(p.id, name);
+                          setEditingId(null);
+                        } else if (e.key === 'Escape') {
+                          setEditingId(null);
+                        }
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <ProjectName title={p.title || p.name}>{p.title || p.name}</ProjectName>
+                  )}
                   <EllipsisWrapper>
                     <EllipsisButton
                       onClick={(e) => {
@@ -52,14 +63,20 @@ const AddProjectPage = () => {
                     </EllipsisButton>
                     {openMenuId === p.id && (
                       <DropdownMenu onClick={(e) => e.stopPropagation()}>
-                        <MenuItem onClick={() => alert("이름 변경")}>
+                        <MenuItem
+                          onClick={() => {
+                            setEditingId(p.id);
+                            setEditingValue(p.title || p.name || "");
+                            setOpenMenuId(null);
+                          }}
+                        >
                           <MenuIcon
                             src="/images/ChangeNameIcon.svg"
                             alt="change-name"
                           />
                           이름 변경
                         </MenuItem>
-                        <MenuItem danger onClick={() => alert("삭제")}>
+                        <MenuItem danger onClick={() => onDelete?.(p.id)}>
                           <MenuIcon src="/images/DeleteIcon.svg" alt="delete" />
                           삭제
                         </MenuItem>
@@ -77,7 +94,7 @@ const AddProjectPage = () => {
   );
 };
 
-export default AddProjectPage;
+export default ProjectCardsPage;
 
 const RightCol = styled.div`
   flex: 5;
@@ -200,6 +217,18 @@ const ProjectName = styled.span`
   padding-right: 8px;
   flex: 1 1 auto;
   min-width: 0; /* allow ellipsis in flex */
+`;
+
+const EditInput = styled.input`
+  flex: 1 1 auto;
+  min-width: 0;
+  border-radius: 3px;
+  border: 1px solid #666;
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  font-family: DungGeunMo;
+  font-size: 16px;
+  padding: 6px 8px;
 `;
 
 const EllipsisWrapper = styled.div`

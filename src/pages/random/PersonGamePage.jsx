@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -20,14 +19,14 @@ const PersonGamePage = () => {
       setWindowHeight(window.innerHeight);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Shuffle and pick 10 cards
     const shuffled = [...personData].sort(() => 0.5 - Math.random());
     setCards(shuffled.slice(0, 10));
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -35,32 +34,35 @@ const PersonGamePage = () => {
     focusRef.current?.focus();
   }, []);
 
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Escape') {
-      navigate(-1);
-    } else if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
-      e.preventDefault();
-      setIsAnswered((prev) => !prev);
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      if (currentCardIndex > 0) {
-        setCurrentCardIndex((prev) => prev - 1);
-        setIsAnswered(false);
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Escape") {
+        navigate(-1);
+      } else if (e.key === " " || e.key === "Spacebar" || e.key === "Enter") {
+        e.preventDefault();
+        setIsAnswered((prev) => !prev);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        if (currentCardIndex > 0) {
+          setCurrentCardIndex((prev) => prev - 1);
+          setIsAnswered(false);
+        }
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        if (currentCardIndex < cards.length - 1) {
+          setCurrentCardIndex((prev) => prev + 1);
+          setIsAnswered(false);
+        } else {
+          navigate("/gameover", { state: { gameName: "person" } });
+        }
       }
-    } else if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      if (currentCardIndex < cards.length - 1) {
-        setCurrentCardIndex((prev) => prev + 1);
-        setIsAnswered(false);
-      } else {
-        navigate('/gameover', { state: { gameName: 'person' } });
-      }
-    }
-  }, [currentCardIndex, cards.length, navigate]);
+    },
+    [currentCardIndex, cards.length, navigate]
+  );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
   // Prefetch next 2 images to reduce wait between cards
@@ -71,8 +73,8 @@ const PersonGamePage = () => {
 
     toPrefetch.forEach((c) => {
       const img = new Image();
-      img.decoding = 'async';
-      img.src = c.name;
+      img.decoding = "async";
+      img.src = c.name; // public/person 로컬 자산
     });
   }, [cards, currentCardIndex]);
 
@@ -81,7 +83,7 @@ const PersonGamePage = () => {
       setCurrentCardIndex((prev) => prev + 1);
       setIsAnswered(false);
     } else {
-      navigate('/gameover', { state: { gameName: 'person' } });
+      navigate("/gameover", { state: { gameName: "person" } });
     }
   };
 
@@ -109,10 +111,14 @@ const PersonGamePage = () => {
         <Counter>
           {currentCardIndex + 1}/{cards.length}
         </Counter>
-        <div style={{ width: '48px' }} />
+        <div style={{ width: "48px" }} />
       </Header>
       <Content>
-        <NavButton onClick={handlePrev} disabled={currentCardIndex === 0} chevron="left">
+        <NavButton
+          onClick={handlePrev}
+          disabled={currentCardIndex === 0}
+          chevron="left"
+        >
           <img src="/images/icon_chevron_left_white.png" alt="prev" />
         </NavButton>
         <CardContainer>
@@ -145,7 +151,7 @@ const PersonGamePage = () => {
 export default PersonGamePage;
 
 const Container = styled.div`
-  background-image: url('/images/background_final.png');
+  background-image: url("/images/background_final.png");
   background-size: contain;
   height: 100vh;
   display: flex;
@@ -168,17 +174,17 @@ const ExitButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0 0 0 7.5vw ;
+  padding: 0 0 0 7.5vw;
   img {
     width: 3vw;
   }
 `;
 
 const Counter = styled.div`
-  font-family: 'DungGeunMo', sans-serif;
+  font-family: "DungGeunMo", sans-serif;
   font-size: 3.3vw;
   position: absolute;
-  left: 50%; 
+  left: 50%;
   transform: translateX(-50%);
 `;
 
@@ -193,15 +199,15 @@ const NavButton = styled.button`
   border: none;
   cursor: pointer;
   position: absolute;
-  top: 50%; 
+  top: 50%;
   transform: translateY(-50%);
 
   img {
     height: 9.3vh;
   }
-    
-  ${(props) => props.chevron === 'left' && `left: 8vw;`}
-  ${(props) => props.chevron === 'right' && `right: 8vw;`}
+
+  ${(props) => props.chevron === "left" && `left: 8vw;`}
+  ${(props) => props.chevron === "right" && `right: 8vw;`}
 
   &:disabled {
     cursor: default;
@@ -237,14 +243,14 @@ const AnswerButton = styled.button`
   background-color: #ff62d3;
   border: none;
   border-radius: 12px;
-  font-family: 'DungGeunMo', sans-serif;
+  font-family: "DungGeunMo", sans-serif;
   font-size: 3vw;
   color: black;
   cursor: pointer;
 `;
 
 const AnswerText = styled.div`
-  font-family: 'DungGeunMo', sans-serif;
+  font-family: "DungGeunMo", sans-serif;
   font-size: 5.6vw;
   color: #ff62d3;
   cursor: pointer;

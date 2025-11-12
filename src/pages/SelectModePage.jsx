@@ -5,107 +5,111 @@ import ReadyPage from './random/ReadyPage';
 import { useAuth } from '../GoogleAuthManager';
 
 const SelectModePage = () => {
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-    const navigate = useNavigate();
-    const focusRef = useRef(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const navigate = useNavigate();
+  const focusRef = useRef(null);
 
-    const { user, googleSignIn } = useAuth();
-    const [isPopUpShow, setisPopUpShow] = useState(false);
+  const { user, googleSignIn } = useAuth();
+  const [isPopUpShow, setisPopUpShow] = useState(false);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setWindowHeight(window.innerHeight);
-        };
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight);
+    };
 
-        window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize);
 
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
-    useEffect(() => {
-        focusRef.current?.focus();
-    }, []);
+  useEffect(() => {
+    focusRef.current?.focus();
+  }, []);
 
-    if (windowWidth < 1126 || windowHeight < 627) {
-        return <ReadyPage />;
+  if (windowWidth < 1126 || windowHeight < 627) {
+    return <ReadyPage />;
+  }
+
+  useEffect(() => {
+    if (user && isPopUpShow) {
+      setisPopUpShow(false);
+      navigate('/customhome');
     }
+  }, [user, isPopUpShow, navigate]);
 
-    useEffect(() => {
-        if (user && isPopUpShow) {
-            setisPopUpShow(false);
-            navigate('/customhome');
-        }
-    }, [user, isPopUpShow, navigate]);
-
-    return (
-        <Container ref={focusRef}>
-            <Header>
-                <TitleImage
-                    src="/images/title.png"
-                    alt="title"
-                    onClick={() => navigate('/')}
-                />
-            </Header>
-            <SelectTitleRow>
-                <SelectTitleIcon src="/images/left_mode_select.svg"/> 
-                <SelectModeTitle>Select Mode</SelectModeTitle>
-                <SelectTitleIcon src="/images/right_mode_select.svg"/>
-            </SelectTitleRow>
-            <Content>
-                <SelectCard onClick={() => navigate('/random_home')}>
-                    <PageBtnIcon
-                        src="/images/randomPageImageDice.svg"
-                        alt="RandomPageIcon"
-                    />
-                    <ModeTitle>Random</ModeTitle>
-                    <ModeDesc>랜덤으로 게임을</ModeDesc>
-                    <ModeDesc>진행하고 싶을때!</ModeDesc>
-                </SelectCard>
-                <SelectCard onClick={() => setisPopUpShow(true)}>
-                    <PageBtnIcon
-                        src="/images/customPageImage.svg"
-                        alt="customPageIcon"
-                    />
-                    <ModeTitle>Custom</ModeTitle>
-                    <ModeDesc>내가 원하는 정답을 바탕으로</ModeDesc>
-                    <ModeDesc>게임을 진행하고 싶을때!</ModeDesc>
-                </SelectCard>
-                {isPopUpShow && (
-                    <LoginPopUp
-                        onClose={() => setisPopUpShow(false)}
-                        onGoogleLogin={googleSignIn}
-                    />
-                )}
-            </Content>
-        </Container>
-    );
+  return (
+    <Container ref={focusRef}>
+      <Header>
+        <TitleImage
+          src="/images/title.png"
+          alt="title"
+          onClick={() => navigate('/')}
+        />
+      </Header>
+      <SelectTitleRow>
+        <SelectTitleIcon src="/images/left_mode_select.svg" />
+        <SelectModeTitle>Select Mode</SelectModeTitle>
+        <SelectTitleIcon src="/images/right_mode_select.svg" />
+      </SelectTitleRow>
+      <Content>
+        <SelectCard onClick={() => navigate('/random_home')}>
+          <PageBtnIcon
+            src="/images/randomPageImageDice.svg"
+            alt="RandomPageIcon"
+          />
+          <ModeTitle>Random</ModeTitle>
+          <ModeDesc>랜덤으로 게임을</ModeDesc>
+          <ModeDesc>진행하고 싶을때!</ModeDesc>
+        </SelectCard>
+        <SelectCard onClick={() => setisPopUpShow(true)}>
+          <PageBtnIcon
+            src="/images/customPageImage.svg"
+            alt="customPageIcon"
+          />
+          <ModeTitle>Custom</ModeTitle>
+          <ModeDesc>내가 원하는 정답을 바탕으로</ModeDesc>
+          <ModeDesc>게임을 진행하고 싶을때!</ModeDesc>
+        </SelectCard>
+        {isPopUpShow && (
+          <LoginPopUp
+            onClose={() => setisPopUpShow(false)}
+            onGoogleLogin={googleSignIn}
+          />
+        )}
+      </Content>
+    </Container>
+  );
 };
 
 const LoginPopUp = ({ onClose, onGoogleLogin }) => {
-    const handleGoogleLogin = async () => {
-        try {
-            await onGoogleLogin();
-        } catch (error) {
-            console.error("faild to gogle login:", error);
-        }
-    };
+  const handleGoogleLogin = async () => {
+    try {
+      await onGoogleLogin();
+    } catch (error) {
+      console.error("faild to gogle login:", error);
+    }
+  };
 
-    return (
-        <PopUpOverlay onClick={onClose}>
-            <PopUpContainer onClick={(e) => e.stopPropagation()}>
-                <p>로그인</p>
-                <GoogleLoginButton onClick={handleGoogleLogin}>
-                    Google 계정으로 로그인
-                </GoogleLoginButton>
-                <br />
-                <CloseButton onClick={onClose}>close</CloseButton>
-            </PopUpContainer>
-        </PopUpOverlay>
-    );
+  return (
+    <PopUpOverlay onClick={onClose}>
+      <PopUpContainer onClick={(e) => e.stopPropagation()}>
+        <CloseButton onClick={onClose}>x</CloseButton>
+        <PopUpTitle>엠티게임천국 로그인</PopUpTitle>
+        <PopUpContent>'커스텀 기능'을 사용하기 위해서는</PopUpContent>
+        <PopUpContent>로그인이 필요해요</PopUpContent>
+
+        <GoogleLoginButton onClick={handleGoogleLogin}>
+          <GoogleImage src="/public/googlelogo.png" />
+          <GoogleText>구글 로그인</GoogleText>
+        </GoogleLoginButton>
+        <br />
+      </PopUpContainer>
+    </PopUpOverlay>
+  );
 };
 
 export default SelectModePage;
@@ -187,6 +191,7 @@ const ModeTitle = styled.div`
   line-height: normal;
   letter-spacing: 3.72px;
   text-align: center;
+  margin-top: 50px;
   margin-bottom: 12px;
 `;
 
@@ -250,18 +255,70 @@ position: fixed;
 `;
 
 const PopUpContainer = styled.div`
+  position: relative;
   background: white;
   flex-direction: column;
+  display: flex;
   align-items: center;
-  width: 350px;
+  width: 32.42vw;
   text-align: center;
+  border-radius: 7.77px;
 `;
 
 const GoogleLoginButton = styled.button`
-  background-color: blue;
-  color: white;
+  position: relative;
+  background-color: white;
+  width: 27.3vw;
+  height: 3.7vw;
+  border: 1px solid #D9D9D9;
+  border-radius: 3.88px;
+  display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center; 
+  font-family: DungGeunMo;
+  margin: 50px 0 50px 0px;  
+  &:hover {
+    background: #f8f9fa;
+  }
+`;
+
+const GoogleImage = styled.img`
+  width: 22.9px;
+  height: 22.9px;
+  position: absolute; 
+  left: 20px; 
+`;
+
+const GoogleText = styled.span`
+  font-size: 16px;
+  font-weight: 400;
+  color: #444444;
 `;
 
 const CloseButton = styled.button`
-  color: black;
+  position: absolute;
+  background: none;
+  top: 15px;
+  right: 30px;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  font-family: DungGeunMo;
+  color: #646464;
+`;
+
+const PopUpTitle = styled.p`
+  font-size: 23px;
+  font-weight: 400;
+  margin-top: 50px;
+  margin-bottom: 17px;
+  color: #444444;
+`;
+
+const PopUpContent = styled.p`
+  font-size: 18px;
+  font-weight: 400;
+  color: #595959;
+  margin: 0px;
 `;

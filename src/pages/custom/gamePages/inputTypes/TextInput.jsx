@@ -1,9 +1,14 @@
 // 단어텔레파시, 디스코, 액션초성게임, 텔레스트레이션
 
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-const TextInput = ({ inputs, setInputs }) => {
+const TextInput = ({ inputs, setInputs, onSave, gameType }) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleDelete = (idx) => {
+    setInputs((prev) => prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, id: i + 1 })));
+  };
   const handleAddInput = () => {
     setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
   };
@@ -16,26 +21,37 @@ const TextInput = ({ inputs, setInputs }) => {
   return (
     <InputContainer>
       <InputTopRow>
-        <GameTypeBadge>텔레스트레이션</GameTypeBadge>
+        <GameTypeBadge>{gameType || '텍스트입력'}</GameTypeBadge>
         <InfoIcon>i</InfoIcon>
-        <EditBtn>편집</EditBtn>
+        <EditBtn onClick={() => setIsEditing((v) => !v)}>{isEditing ? '완료' : '편집'}</EditBtn>
       </InputTopRow>
       <InputBoxesScrollArea>
         <InputBoxesContainer>
-          {inputs.map((item) => (
-            <InputBox key={item.id}>
-              <InputIndex>{item.id}</InputIndex>
-              <Input
-                placeholder="단어를 입력해주세요"
-                value={item.value}
-                onChange={(e) => handleInputChange(item.id, e.target.value)}
-              />
-            </InputBox>
+          {inputs.map((item, idx) => (
+            <Row key={item.id}>
+              <InputBox>
+                <InputIndex>{item.id}</InputIndex>
+                <Input
+                  placeholder="단어를 입력해주세요"
+                  value={item.value}
+                  onChange={(e) => handleInputChange(item.id, e.target.value)}
+                />
+              </InputBox>
+              {isEditing && (
+                <DeleteIcon
+                  src="/images/deleteBtn.svg"
+                  alt="delete"
+                  onClick={() => handleDelete(idx)}
+                />
+              )}
+            </Row>
           ))}
         </InputBoxesContainer>
-        <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+        {(inputs?.length ?? 0) < 20 && (
+          <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+        )}
       </InputBoxesScrollArea>
-      <SaveBtn>저장</SaveBtn>
+      <SaveBtn onClick={onSave}>저장</SaveBtn>
     </InputContainer>
   );
 };
@@ -58,14 +74,13 @@ const InputBoxesContainer = styled.div`
 
 const InputBox = styled.div`
   background-color: red;
-  width: 100%;
+  flex: 1;
   padding: 5px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-radius: 3px;
   background: rgba(238, 238, 238, 0.2);
-  margin-top: 15px;
 `;
 
 const InputIndex = styled.div`
@@ -99,6 +114,21 @@ const Input = styled.input`
     outline: none;
   }
 `;
+
+const DeleteIcon = styled.img`
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  cursor: pointer;
+`;
+
+const Row = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+`
 
 const AddInputBoxBtn = styled.div`
   border-radius: 4px;
@@ -163,8 +193,8 @@ const GameTypeBadge = styled.span`
   border-radius: 6px;
   background: rgba(255, 98, 211, 0.2);
   display: flex;
-  width: 14vw;
-  height: 7vh;
+  width: 11vw;
+  height: 5vh;
   padding: 12px;
   justify-content: center;
   align-items: center;

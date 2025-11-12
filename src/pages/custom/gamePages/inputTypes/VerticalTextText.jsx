@@ -1,9 +1,10 @@
 // 대표게임
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-const VerticalTextText = ({ inputs, setInputs }) => {
+const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const handleAddInput = () => {
     setInputs((prev) => [
       ...prev,
@@ -18,41 +19,85 @@ const VerticalTextText = ({ inputs, setInputs }) => {
       )
     );
   };
+
+  const handleDelete = (idx) => {
+    setInputs((prev) => prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, id: i + 1 })));
+  };
+  const containerRef = useRef(null);
+
+  const adjustAllTextareaHeights = () => {
+    if (!containerRef.current) return;
+    const textareas = containerRef.current.querySelectorAll('textarea');
+    textareas.forEach((ta) => {
+      ta.style.height = 'auto';
+      ta.style.height = `${ta.scrollHeight}px`;
+    });
+  };
+
+  useEffect(() => {
+    // On mount and whenever inputs change (e.g., after navigation),
+    // sync textarea heights to their content.
+    adjustAllTextareaHeights();
+    // Also adjust after a tick in case fonts/layout apply later
+    const id = requestAnimationFrame(adjustAllTextareaHeights);
+    return () => cancelAnimationFrame(id);
+  }, [inputs]);
+
   return (
-    <InputContainer>
+    <InputContainer ref={containerRef}>
       <InputTopRow>
-        <GameTypeBadge>대표게임</GameTypeBadge>
+        <GameTypeBadge>{gameType || '대표게임'}</GameTypeBadge>
         <InfoIcon>i</InfoIcon>
-        <EditBtn>편집</EditBtn>
+        <EditBtn onClick={() => setIsEditing((v) => !v)}>{isEditing ? '완료' : '편집'}</EditBtn>
       </InputTopRow>
       <InputBoxesScrollArea>
         <InputBoxesContainer>
-          {inputs.map((item) => (
-            <InputBox key={item.id}>
-              <InputIndex>{item.id}</InputIndex>
-              <InputsColumn>
-                <Input
-                  placeholder="지문을 입력해주세요"
-                  value={item.description || ""}
-                  onChange={(e) =>
-                    handleInputChange(item.id, "description", e.target.value)
-                  }
+          {inputs.map((item, idx) => (
+            <Row key={item.id}>
+              <InputBox>
+                <InputIndex>{item.id}</InputIndex>
+                <InputsColumn>
+                  <Input
+                    as="textarea"
+                    placeholder="지문을 입력해주세요"
+                    value={item.description || ""}
+                    onChange={(e) => {
+                      // auto-grow height
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                      handleInputChange(item.id, "description", e.target.value);
+                    }}
+                    rows={1}
+                  />
+                  <Input
+                    as="textarea"
+                    placeholder="미션을 입력해주세요"
+                    value={item.mission || ""}
+                    onChange={(e) => {
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                      handleInputChange(item.id, "mission", e.target.value);
+                    }}
+                    className="bottominput"
+                    rows={1}
+                  />
+                </InputsColumn>
+              </InputBox>
+              {isEditing && (
+                <DeleteIcon
+                  src="/images/deleteBtn.svg"
+                  alt="delete"
+                  onClick={() => handleDelete(idx)}
                 />
-                <Input
-                  placeholder="미션을 입력해주세요"
-                  value={item.mission || ""}
-                  onChange={(e) =>
-                    handleInputChange(item.id, "mission", e.target.value)
-                  }
-                  className="bottominput"
-                />
-              </InputsColumn>
-            </InputBox>
+              )}
+            </Row>
           ))}
         </InputBoxesContainer>
-        <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+        {(inputs?.length ?? 0) < 20 && (
+          <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
+        )}
       </InputBoxesScrollArea>
-      <SaveBtn>저장</SaveBtn>
+      <SaveBtn onClick={onSave}>저장</SaveBtn>
     </InputContainer>
   );
 };
@@ -75,7 +120,7 @@ const InputBoxesContainer = styled.div`
 
 const InputBox = styled.div`
   background-color: red;
-  width: 100%;
+  flex: 1;
   padding: 10px;
   display: flex;
   flex-direction: row;
@@ -83,7 +128,6 @@ const InputBox = styled.div`
   gap: 35px;
   border-radius: 3px;
   background: rgba(238, 238, 238, 0.2);
-  margin-top: 15px;
 `;
 
 const InputIndex = styled.div`
@@ -94,14 +138,16 @@ const InputIndex = styled.div`
   font-size: 24px;
 `;
 
-const Input = styled.input`
+const Input = styled.textarea`
   width: 100%;
   border-radius: 3px;
   background: rgba(160, 160, 160, 0.7);
-  height: 42px;
-  min-height: 36px;
+  min-height: 42px;
   box-sizing: border-box;
-  padding: 6px 30px;
+  padding: 10px 16px;
+  line-height: 1.4;
+  overflow: hidden;
+  resize: none;
 
   font-family: DungGeunMo;
   font-size: 18px;
@@ -126,6 +172,21 @@ const Input = styled.input`
     }
   }
 `;
+
+const DeleteIcon = styled.img`
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  cursor: pointer;
+`;
+
+const Row = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+`
 
 const InputsColumn = styled.div`
   display: flex;
@@ -197,8 +258,8 @@ const GameTypeBadge = styled.span`
   border-radius: 6px;
   background: rgba(255, 98, 211, 0.2);
   display: flex;
-  width: 14vw;
-  height: 7vh;
+  width: 11vw;
+  height: 5vh;
   padding: 12px;
   justify-content: center;
   align-items: center;
