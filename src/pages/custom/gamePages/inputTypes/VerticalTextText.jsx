@@ -7,6 +7,8 @@ const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
   const inputRefs = useRef({});
+  const [showInfo, setShowInfo] = useState(false);
+
   const handleAddInput = () => {
     // Require both fields for every existing row before adding new one
     const nextErrors = {};
@@ -112,8 +114,17 @@ const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
     <InputContainer ref={containerRef}>
       <InputTopRow>
         <GameTypeBadge>{gameType || '대표게임'}</GameTypeBadge>
-        <InfoIcon>i</InfoIcon>
-        <EditBtn onClick={() => setIsEditing((v) => !v)}>{isEditing ? '완료' : '편집'}</EditBtn>
+        <InfoWrapper
+          onMouseEnter={() => setShowInfo(true)}
+          onMouseLeave={() => setShowInfo(false)}
+        >
+          <InfoIcon>i</InfoIcon>
+          {showInfo && (
+            <HoverImageContainer>
+              <HoverImage src="/images/hover_vertical.png" alt="info" />
+            </HoverImageContainer>
+          )}
+        </InfoWrapper>        <EditBtn onClick={() => setIsEditing((v) => !v)}>{isEditing ? '완료' : '편집'}</EditBtn>
       </InputTopRow>
       <InputBoxesScrollArea>
         <InputBoxesContainer>
@@ -337,6 +348,14 @@ const GameTypeBadge = styled.span`
   box-sizing: border-box;
 `;
 
+const InfoWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 20px;
+`;
+
+
 const InfoIcon = styled.span`
   color: #dadadb;
   font-family: DungGeunMo;
@@ -352,6 +371,23 @@ const InfoIcon = styled.span`
   align-items: center;
   flex-shrink: 0;
   margin-left: 20px;
+  cursor: pointer;
+  &:hover {
+    background: #a0a0a0;
+  }
+`;
+
+const HoverImageContainer = styled.div`
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-10%);
+  padding: 4px;
+  z-index: 9999;
+`;
+
+const HoverImage = styled.img`
+  width: 37.57vw;
 `;
 
 const EditBtn = styled.span`

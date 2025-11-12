@@ -7,6 +7,7 @@ const FourLetterInput = ({ inputs, setInputs, onSave, gameType }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({}); // { [id]: true }
   const inputRefs = useRef({});
+  const [showInfo, setShowInfo] = useState(false);
 
   const handleAddInput = () => {
     // validate existing rows: require exactly 2 chars (after trim) before adding
@@ -53,7 +54,17 @@ const FourLetterInput = ({ inputs, setInputs, onSave, gameType }) => {
     <InputContainer>
       <InputTopRow>
         <GameTypeBadge>{gameType || '네글자퀴즈'}</GameTypeBadge>
-        <InfoIcon>i</InfoIcon>
+        <InfoWrapper
+          onMouseEnter={() => setShowInfo(true)}
+          onMouseLeave={() => setShowInfo(false)}
+        >
+          <InfoIcon>i</InfoIcon>
+          {showInfo && (
+            <HoverImageContainer>
+              <HoverImage src="/images/hover_four.png" alt="info" />
+            </HoverImageContainer>
+          )}
+        </InfoWrapper>
         <EditBtn onClick={() => setIsEditing((v) => !v)}>{isEditing ? '완료' : '편집'}</EditBtn>
       </InputTopRow>
 
@@ -273,6 +284,14 @@ const GameTypeBadge = styled.span`
   box-sizing: border-box;
 `;
 
+const InfoWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 20px;
+`;
+
+
 const InfoIcon = styled.span`
   color: #dadadb;
   font-family: DungGeunMo;
@@ -288,6 +307,23 @@ const InfoIcon = styled.span`
   align-items: center;
   flex-shrink: 0;
   margin-left: 20px;
+  cursor: pointer;
+  &:hover {
+    background: #a0a0a0;
+  }
+`;
+
+const HoverImageContainer = styled.div`
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-10%);
+  padding: 4px;
+  z-index: 9999;
+`;
+
+const HoverImage = styled.img`
+  width: 37.57vw;
 `;
 
 const EditBtn = styled.span`
