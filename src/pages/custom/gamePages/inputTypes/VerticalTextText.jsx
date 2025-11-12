@@ -5,7 +5,32 @@ import styled from "styled-components";
 
 const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState({});
+  const inputRefs = useRef({});
   const handleAddInput = () => {
+    // Require both fields for every existing row before adding new one
+    const nextErrors = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
+      const d = (item.description || '').trim();
+      const m = (item.mission || '').trim();
+      if (!d) {
+        nextErrors[`${item.id}.description`] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, field: 'description' };
+      }
+      if (!m) {
+        nextErrors[`${item.id}.mission`] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, field: 'mission' };
+      }
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      if (firstInvalid && inputRefs.current[firstInvalid.id]?.[firstInvalid.field]) {
+        inputRefs.current[firstInvalid.id][firstInvalid.field].focus();
+      }
+      return;
+    }
+
     setInputs((prev) => [
       ...prev,
       { id: prev.length + 1, description: "", mission: "" },
@@ -18,6 +43,16 @@ const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
         item.id === id ? { ...item, [field]: newValue } : item
       )
     );
+    // Clear error for this field when user types something
+    setErrors((prev) => {
+      const key = `${id}.${field}`;
+      if (prev[key] && String(newValue).trim().length > 0) {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      }
+      return prev;
+    });
   };
 
   const handleDelete = (idx) => {
@@ -43,6 +78,36 @@ const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
     return () => cancelAnimationFrame(id);
   }, [inputs]);
 
+  const setRef = (id, field) => (el) => {
+    if (!inputRefs.current[id]) inputRefs.current[id] = {};
+    inputRefs.current[id][field] = el;
+  };
+
+  const handleSave = async () => {
+    const nextErrors = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
+      const d = (item.description || '').trim();
+      const m = (item.mission || '').trim();
+      if (!d) {
+        nextErrors[`${item.id}.description`] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, field: 'description' };
+      }
+      if (!m) {
+        nextErrors[`${item.id}.mission`] = true;
+        if (!firstInvalid) firstInvalid = { id: item.id, field: 'mission' };
+      }
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      if (firstInvalid && inputRefs.current[firstInvalid.id]?.[firstInvalid.field]) {
+        inputRefs.current[firstInvalid.id][firstInvalid.field].focus();
+      }
+      return;
+    }
+    await onSave?.();
+  };
+
   return (
     <InputContainer ref={containerRef}>
       <InputTopRow>
@@ -61,6 +126,8 @@ const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
                     as="textarea"
                     placeholder="지문을 입력해주세요"
                     value={item.description || ""}
+                    $error={!!errors[`${item.id}.description`]}
+                    ref={setRef(item.id, 'description')}
                     onChange={(e) => {
                       // auto-grow height
                       e.target.style.height = 'auto';
@@ -73,6 +140,8 @@ const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
                     as="textarea"
                     placeholder="미션을 입력해주세요"
                     value={item.mission || ""}
+                    $error={!!errors[`${item.id}.mission`]}
+                    ref={setRef(item.id, 'mission')}
                     onChange={(e) => {
                       e.target.style.height = 'auto';
                       e.target.style.height = `${e.target.scrollHeight}px`;
@@ -97,7 +166,7 @@ const VerticalTextText = ({ inputs, setInputs, onSave, gameType }) => {
           <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
         )}
       </InputBoxesScrollArea>
-      <SaveBtn onClick={onSave}>저장</SaveBtn>
+      <SaveBtn onClick={handleSave}>저장</SaveBtn>
     </InputContainer>
   );
 };
@@ -148,6 +217,7 @@ const Input = styled.textarea`
   line-height: 1.4;
   overflow: hidden;
   resize: none;
+  border: 2px solid ${(p) => (p.$error ? '#ff3b30' : 'transparent')};
 
   font-family: DungGeunMo;
   font-size: 18px;
@@ -160,7 +230,7 @@ const Input = styled.textarea`
   }
 
   &:focus {
-    border: 3px solid gray;
+    border: 3px solid ${(p) => (p.$error ? '#ff3b30' : 'gray')};
     outline: none;
   }
 

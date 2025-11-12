@@ -6,16 +6,21 @@ import { useAuth } from '../../GoogleAuthManager';
 import ProjectCreateModal from '../../components/ProjectCreateModal';
 
 
-const AddProjectPage = () => {
+const AddProjectPage = ({ onProjectCreated }) => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
 
   const createProjectModal = async (name) => {
-    await createProject({
+    const id = await createProject({
       userId: user.uid,
       title: name,
     });
+    try {
+      await onProjectCreated?.(id);
+    } catch (e) {
+      // no-op
+    }
   };
 
   // This page shows an empty-state (no projects) UI.

@@ -1,15 +1,34 @@
 // 단어텔레파시, 디스코, 액션초성게임, 텔레스트레이션
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
 const TextInput = ({ inputs, setInputs, onSave, gameType }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState({}); // { [id]: true }
+  const inputRefs = useRef({});
 
   const handleDelete = (idx) => {
     setInputs((prev) => prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, id: i + 1 })));
   };
   const handleAddInput = () => {
+    // validate existing rows: value required (trim)
+    const nextErrors = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
+      const v = (item.value || '').trim();
+      if (!v) {
+        nextErrors[item.id] = true;
+        if (!firstInvalid) firstInvalid = item.id;
+      }
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      if (firstInvalid && inputRefs.current[firstInvalid]) {
+        inputRefs.current[firstInvalid].focus?.();
+      }
+      return;
+    }
     setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
   };
 
@@ -17,6 +36,37 @@ const TextInput = ({ inputs, setInputs, onSave, gameType }) => {
     setInputs((prev) =>
       prev.map((item) => (item.id === id ? { ...item, value: newValue } : item))
     );
+    if ((newValue || '').trim().length > 0) {
+      setErrors((prev) => {
+        if (!prev[id]) return prev;
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+    }
+  };
+  const setRef = (id) => (el) => {
+    inputRefs.current[id] = el;
+  };
+
+  const handleSave = async () => {
+    const nextErrors = {};
+    let firstInvalid = null;
+    for (const item of inputs) {
+      const v = (item.value || '').trim();
+      if (!v) {
+        nextErrors[item.id] = true;
+        if (!firstInvalid) firstInvalid = item.id;
+      }
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      if (firstInvalid && inputRefs.current[firstInvalid]) {
+        inputRefs.current[firstInvalid].focus?.();
+      }
+      return;
+    }
+    await onSave?.();
   };
   return (
     <InputContainer>
@@ -34,6 +84,8 @@ const TextInput = ({ inputs, setInputs, onSave, gameType }) => {
                 <Input
                   placeholder="단어를 입력해주세요"
                   value={item.value}
+                  $error={!!errors[item.id]}
+                  ref={setRef(item.id)}
                   onChange={(e) => handleInputChange(item.id, e.target.value)}
                 />
               </InputBox>
@@ -51,7 +103,7 @@ const TextInput = ({ inputs, setInputs, onSave, gameType }) => {
           <AddInputBoxBtn onClick={handleAddInput}>+</AddInputBoxBtn>
         )}
       </InputBoxesScrollArea>
-      <SaveBtn onClick={onSave}>저장</SaveBtn>
+      <SaveBtn onClick={handleSave}>저장</SaveBtn>
     </InputContainer>
   );
 };
@@ -98,6 +150,7 @@ const Input = styled.input`
   height: 3.33vh;
   min-height: 30px;
   padding-left: 25px;
+  border: 2px solid ${(p) => (p.$error ? '#ff3b30' : 'transparent')};
 
   font-family: DungGeunMo;
   font-size: 18px;
@@ -110,7 +163,7 @@ const Input = styled.input`
   }
 
   &:focus {
-    border: 3px solid gray;
+    border: 3px solid ${(p) => (p.$error ? '#ff3b30' : 'gray')};
     outline: none;
   }
 `;

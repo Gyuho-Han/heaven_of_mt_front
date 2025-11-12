@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import ReadyPage from './CustomReadyPage';
 
@@ -8,6 +8,7 @@ const CustomCategoryPage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const navigate = useNavigate();
+  const { gameId } = useParams();
   const focusRef = useRef(null);
 
   useEffect(() => {
@@ -34,7 +35,12 @@ const CustomCategoryPage = () => {
   };
 
   const handleClick = (category) => {
-    navigate('/musictitle', { state: { generation: category } });
+    if (gameId) {
+      navigate(`/custom/musictitle/${gameId}`, { state: { generation: category } });
+    } else {
+      // fallback to non-custom flow if no gameId in URL
+      navigate('/musictitle', { state: { generation: category } });
+    }
   };
 
   if (windowWidth < 1126 || windowHeight < 627) {

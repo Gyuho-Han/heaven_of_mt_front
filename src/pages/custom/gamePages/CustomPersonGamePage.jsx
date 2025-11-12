@@ -125,7 +125,7 @@ const CustomPersonGamePage = () => {
     toPrefetch.forEach((c) => {
       const img = new Image();
       img.decoding = 'async';
-      img.src = c.imgUrl || c.name;
+      img.src = c.imgUrl ? c.imgUrl : encodeURI(c.name);
     });
   }, [cards, currentCardIndex]);
 
@@ -170,7 +170,7 @@ const CustomPersonGamePage = () => {
         </NavButton>
         <CardContainer>
           <Card
-            src={cards[currentCardIndex].imgUrl || cards[currentCardIndex].name}
+            src={cards[currentCardIndex].imgUrl || encodeURI(cards[currentCardIndex].name)}
             alt="person"
             decoding="async"
             fetchpriority="high"

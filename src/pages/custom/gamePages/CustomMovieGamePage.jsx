@@ -118,7 +118,7 @@ const CustomMovieGamePage = () => {
     toPrefetch.forEach((c) => {
       const img = new Image();
       img.decoding = 'async';
-      img.src = c.imgUrl || c.name;
+      img.src = c.imgUrl ? c.imgUrl : encodeURI(c.name);
     });
   }, [cards, currentCardIndex]);
 
@@ -167,7 +167,7 @@ const CustomMovieGamePage = () => {
               <AnswerText>{cards[currentCardIndex].answer}</AnswerText>
             ) : (
               <CardImage
-                src={cards[currentCardIndex].imgUrl || cards[currentCardIndex].name}
+                src={cards[currentCardIndex].imgUrl || encodeURI(cards[currentCardIndex].name)}
                 alt="movie scene"
                 decoding="async"
                 fetchpriority="high"

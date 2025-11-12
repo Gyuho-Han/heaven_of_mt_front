@@ -289,7 +289,7 @@ const GoogleLoginButton = styled.button`
   justify-content: center;
   align-items: center;
   font-family: DungGeunMo;
-  margin: 50px 0 50px 0px;
+  margin-top: 50px;
   &:hover {
     background: #f8f9fa;
   }

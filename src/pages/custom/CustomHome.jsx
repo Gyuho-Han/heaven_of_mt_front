@@ -12,6 +12,7 @@ import ProjectCreateModal from "../../components/ProjectCreateModal";
 const CustomHome = () => {
   const { user } = useAuth();
   const [projects, setProjects] = useState([]);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [games, setGames] = useState([]);
@@ -28,6 +29,7 @@ const CustomHome = () => {
       const list = await readProjects(user.uid);
       const sorted = sortProjects(list);
       setProjects(sorted);
+      setProjectsLoaded(true);
     };
 
     readUserProjects();
@@ -181,7 +183,19 @@ const CustomHome = () => {
             ))}
           </ProjectsListContainer>
         </LeftCol>
-        {showCards ? (
+        {projectsLoaded && projects.length === 0 ? (
+          <AddProjectPage
+            onProjectCreated={async (newId) => {
+              if (!user) return;
+              const list = await readProjects(user.uid);
+              const sorted = sortProjects(list);
+              setProjects(sorted);
+              // keep UX consistent: cards view when projects exist
+              // auto-select the newly created project id for follow-up
+              setSelectedProjectId(newId);
+            }}
+          />
+        ) : showCards ? (
           <ProjectCardsPage
             projects={projects}
             onAddProject={() => setIsModalOpen(true)}

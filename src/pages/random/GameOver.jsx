@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
 const GameOver = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [isHovering2, setIsHovering2] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { gameName } = location.state || { gameName: '' };
+  const { gameName } = location.state || { gameName: "" };
 
   const handlePlayAgain = () => {
     if (gameName) {
@@ -16,10 +16,10 @@ const GameOver = () => {
   };
 
   const handleGoHome = () => {
-    navigate('/random_home');
+    navigate("/random_home");
   };
 
-  const isChurch = gameName && gameName.startsWith('church');
+  const isChurch = gameName && gameName.startsWith("church");
 
   return (
     <Container $isChurch={isChurch}>
@@ -68,9 +68,8 @@ const GameOver = () => {
 export default GameOver;
 
 const Container = styled.div`
-  background-image: url('/images/feedback.gif');
+  background-image: url("/images/feedback.gif");
   background-size: cover;
-  background-position: center top -190px;
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -81,7 +80,7 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-family: 'DungGeunMo', sans-serif;
+  font-family: "DungGeunMo", sans-serif;
   font-size: 48px;
   font-weight: 400;
   margin-bottom: 18.8vh;
@@ -104,7 +103,7 @@ const Button = styled.div`
 `;
 
 const ButtonText = styled.p`
-  font-family: 'DungGeunMo', sans-serif;
+  font-family: "DungGeunMo", sans-serif;
   font-size: 48px;
   font-weight: 400;
   height: 52px;
@@ -124,7 +123,7 @@ const HoverButtonContainer = styled.div`
 `;
 
 const HoverButtonText = styled.p`
-  font-family: 'DungGeunMo', sans-serif;
+  font-family: "DungGeunMo", sans-serif;
   font-size: 48px;
   font-weight: 400;
   margin: 0;
@@ -133,7 +132,7 @@ const HoverButtonText = styled.p`
 `;
 
 const FeedbackLink = styled.a`
-  font-family: 'DungGeunMo', sans-serif;
+  font-family: "DungGeunMo", sans-serif;
   font-size: 2.5vw;
   font-weight: 400;
   color: white;

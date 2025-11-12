@@ -61,12 +61,12 @@ const CustomMusicTitleGamePage = () => {
         const questions = await readQuestions(gameId);
         const formatted = questions
           .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
-          .map((question, idx) => ({
-            id: question.id || `music-${idx}`,
-            name: question.questionText?.trim() || '',
-            answer: question.answer?.trim() || '',
+          .map((q, idx) => ({
+            id: q.id || `music-${idx}`,
+            title: q.questionText?.trim() || '',
+            artist: q.answer?.trim() || '',
           }))
-          .filter((item) => item.name.length > 0 || item.answer.length > 0);
+          .filter((item) => (item.title?.length || 0) > 0 || (item.artist?.length || 0) > 0);
 
         if (!formatted.length) throw new Error('커스텀 노래초성 문제가 없습니다.');
         if (mounted) setCards(formatted);
@@ -160,10 +160,29 @@ const CustomMusicTitleGamePage = () => {
 
   const getQuestionText = (card) => {
     if (!card) return '';
-    // If provided name differs from answer, respect curated name.
-    if (card.name && card.answer && card.name !== card.answer) return card.name;
-    // Otherwise, derive from answer to avoid identical question/answer.
+    // Custom cards (title/artist present): show 초성 of both as "제목 - 가수"
+    if (Object.prototype.hasOwnProperty.call(card, 'title') || Object.prototype.hasOwnProperty.call(card, 'artist')) {
+      const t = card.title || '';
+      const a = card.artist || '';
+      const left = toChosung(t);
+      const right = toChosung(a);
+      // Always include delimiter to match requested format
+      return `${left} - ${right}`.trim();
+    }
+    // Fallback cards (from presets): use provided consonant string in name if available
+    if (card.name) return card.name;
+    // Or derive from full answer
     return toChosung(card.answer || '');
+  };
+
+  const getAnswerText = (card) => {
+    if (!card) return '';
+    if (Object.prototype.hasOwnProperty.call(card, 'title') || Object.prototype.hasOwnProperty.call(card, 'artist')) {
+      const t = card.title || '';
+      const a = card.artist || '';
+      return `${t} - ${a}`.trim();
+    }
+    return card.answer || '';
   };
 
   return (
@@ -184,7 +203,7 @@ const CustomMusicTitleGamePage = () => {
         <CardContainer>
           <Card isAnswered={isAnswered}>
             {isAnswered
-              ? cards[currentCardIndex].answer
+              ? getAnswerText(cards[currentCardIndex])
               : getQuestionText(cards[currentCardIndex])}
           </Card>
         </CardContainer>

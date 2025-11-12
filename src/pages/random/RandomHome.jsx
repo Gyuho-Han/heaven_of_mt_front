@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { gameData } from '../../gameData';
-import Onboarding from '../../components/onboarding/Onboarding';
-import Picker from '../../components/Picker';
-import ReadyPage from './ReadyPage';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { gameData } from "../../gameData";
+import Onboarding from "../../components/onboarding/Onboarding";
+import Picker from "../../components/Picker";
+import ReadyPage from "./ReadyPage";
 
 const RandomHome = () => {
   const [selectedGame, setSelectedGame] = useState(() => {
-    const saved = sessionStorage.getItem('lastSelectedGameIndex');
+    const saved = sessionStorage.getItem("lastSelectedGameIndex");
     const parsed = saved !== null ? parseInt(saved, 10) : 0;
     return Number.isNaN(parsed) ? 0 : parsed;
   });
@@ -24,10 +24,10 @@ const RandomHome = () => {
       setWindowHeight(window.innerHeight);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -36,16 +36,15 @@ const RandomHome = () => {
   }, []);
 
   const handleKeyDown = (e) => {
-    if (e.key === 'ArrowUp') {
+    if (e.key === "ArrowUp") {
       setSelectedGame((prev) => (prev > 0 ? prev - 1 : prev));
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === "ArrowDown") {
       setSelectedGame((prev) => (prev < gameData.length - 1 ? prev + 1 : prev));
-    } else if (e.key === 'Enter') {
-      sessionStorage.setItem('lastSelectedGameIndex', String(selectedGame));
+    } else if (e.key === "Enter") {
+      sessionStorage.setItem("lastSelectedGameIndex", String(selectedGame));
       navigate(gameData[selectedGame].route);
     }
   };
-
 
   if (windowWidth < 1126 || windowHeight < 627) {
     return <ReadyPage />;
@@ -57,7 +56,7 @@ const RandomHome = () => {
         <TitleImage
           src="/images/title.png"
           alt="title"
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
         />
         <ButtonContainer>
           <TeamButton
@@ -79,7 +78,10 @@ const RandomHome = () => {
           selectedIndex={selectedGame}
           onSelect={setSelectedGame}
           onConfirmSelected={() => {
-            sessionStorage.setItem('lastSelectedGameIndex', String(selectedGame));
+            sessionStorage.setItem(
+              "lastSelectedGameIndex",
+              String(selectedGame)
+            );
             navigate(gameData[selectedGame].route);
           }}
         />
@@ -91,9 +93,8 @@ const RandomHome = () => {
 export default RandomHome;
 
 const Container = styled.div`
-  background-image: url('/images/background_final.png');
+  background-image: url("/images/background_final.png");
   background-size: cover;
-  background-position: center top -120px;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -126,8 +127,8 @@ const TeamButton = styled.a`
   border-radius: 8px;
   background: linear-gradient(
     to bottom,
-    ${(props) => (props.$isHovering ? '#FF48AE' : '#FF008E')},
-    ${(props) => (props.$isHovering ? '#FFF5A9' : '#FFEB50')}
+    ${(props) => (props.$isHovering ? "#FF48AE" : "#FF008E")},
+    ${(props) => (props.$isHovering ? "#FFF5A9" : "#FFEB50")}
   );
   color: black;
   font-size: 1.25vw;
