@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { choiData } from '../../../gameData';
 import ReadyPage from './CustomReadyPage';
@@ -11,13 +11,20 @@ const CustomChoiGamePage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const navigate = useNavigate();
+  const location = useLocation();
   const { gameId } = useParams();
   const focusRef = useRef(null);
+  const isPreview = !!(location.state && location.state.fromPreview);
   const goToCustomGameOver = useCallback(() => {
-    navigate('/custom/gameover', {
-      state: { gameName: 'choi', gameId },
-    });
-  }, [navigate, gameId]);
+    const fromPreview = !!(location.state && location.state.fromPreview);
+    if (fromPreview) {
+      navigate(-1);
+    } else {
+      navigate('/custom/gameover', {
+        state: { gameName: 'choi', gameId },
+      });
+    }
+  }, [navigate, gameId, location.state]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -124,7 +131,7 @@ const CustomChoiGamePage = () => {
   }
 
   return (
-    <Container tabIndex="0" ref={focusRef}>
+    <Container tabIndex="0" ref={focusRef} $transparent={isPreview}>
       <Header>
         <ExitButton onClick={() => navigate(-1)}>
           <img src="/images/Exit.png" alt="exit" />
@@ -152,7 +159,7 @@ const CustomChoiGamePage = () => {
 export default CustomChoiGamePage;
 
 const Container = styled.div`
-  background-image: url('/images/background_final.png');
+  background-image: ${(p) => (p.$transparent ? 'none' : "url('/images/background_final.png')")};
   background-size: contain;
   height: 100vh;
   display: flex;

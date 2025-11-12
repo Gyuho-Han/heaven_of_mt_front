@@ -14,13 +14,19 @@ const CustomMusicTitleGamePage = () => {
   const navigate = useNavigate();
   const focusRef = useRef(null);
   const location = useLocation();
+  const isPreview = !!(location.state && location.state.fromPreview);
   const { generation } = location.state || { generation: '' };
   const { gameId } = useParams();
   const goToCustomGameOver = useCallback(() => {
-    navigate('/custom/gameover', {
-      state: { gameName: 'musictitle', gameId },
-    });
-  }, [navigate, gameId]);
+    const fromPreview = !!(location.state && location.state.fromPreview);
+    if (fromPreview) {
+      navigate(-1);
+    } else {
+      navigate('/custom/gameover', {
+        state: { gameName: 'musictitle', gameId },
+      });
+    }
+  }, [navigate, gameId, location.state]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -186,7 +192,7 @@ const CustomMusicTitleGamePage = () => {
   };
 
   return (
-    <Container tabIndex="0" ref={focusRef}>
+    <Container tabIndex="0" ref={focusRef} $transparent={isPreview}>
       <Header>
         <ExitButton onClick={() => navigate(-1)}>
           <img src="/images/Exit.png" alt="exit" />
@@ -221,7 +227,7 @@ const CustomMusicTitleGamePage = () => {
 export default CustomMusicTitleGamePage;
 
 const Container = styled.div`
-  background-image: url('/images/background_final.png');
+  background-image: ${(p) => (p.$transparent ? 'none' : "url('/images/background_final.png')")};
   background-size: contain;
   height: 100vh;
   display: flex;
