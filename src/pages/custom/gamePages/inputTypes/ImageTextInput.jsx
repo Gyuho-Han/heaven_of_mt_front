@@ -15,6 +15,7 @@ const ImageTextInput = ({
   const [missing, setMissing] = useState({}); // { [id]: true } when image required but missing
   const [textErrors, setTextErrors] = useState({}); // { [id]: true } when answer text missing
   const inputRefs = useRef({}); // { [id]: { file: ref, text: ref } }
+  const [showInfo, setShowInfo] = useState(false);
   const getNameFromUrl = (url = "") => {
     try {
       const noQuery = url.split('?')[0];
@@ -56,12 +57,12 @@ const ImageTextInput = ({
     setMissing(imgMissing);
     setTextErrors(txtMissing);
     if (firstInvalid) {
-        const ref = inputRefs.current[firstInvalid.id]?.[firstInvalid.kind];
-        if (ref) {
-          if (firstInvalid.kind === 'file' && typeof ref.click === 'function') ref.click();
-          else if (typeof ref.focus === 'function') ref.focus();
-        }
-        return;
+      const ref = inputRefs.current[firstInvalid.id]?.[firstInvalid.kind];
+      if (ref) {
+        if (firstInvalid.kind === 'file' && typeof ref.click === 'function') ref.click();
+        else if (typeof ref.focus === 'function') ref.focus();
+      }
+      return;
     }
     setInputs((prev) => [...prev, { id: prev.length + 1, value: "" }]);
   };
@@ -147,7 +148,24 @@ const ImageTextInput = ({
     <InputContainer>
       <InputTopRow>
         <GameTypeBadge>{gameType || '인물퀴즈'}</GameTypeBadge>
-        <InfoIcon>i</InfoIcon>
+        <InfoWrapper
+          onMouseEnter={() => setShowInfo(true)}
+          onMouseLeave={() => setShowInfo(false)}
+        >
+          <InfoIcon>i</InfoIcon>
+          {showInfo && (
+            <HoverImageContainer>
+              <HoverImage
+                src={
+                  gameType === '인물퀴즈'
+                    ? '/images/hover_people.png'
+                    : '/images/hover_quote.png'
+                }
+                alt="info"
+              />
+            </HoverImageContainer>
+          )}
+        </InfoWrapper>
         <EditBtn onClick={() => setIsEditing((v) => !v)}>
           {isEditing ? "완료" : "편집"}
         </EditBtn>
@@ -370,6 +388,14 @@ const GameTypeBadge = styled.span`
   box-sizing: border-box;
 `;
 
+const InfoWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 20px;
+`;
+
+
 const InfoIcon = styled.span`
   color: #dadadb;
   font-family: DungGeunMo;
@@ -385,6 +411,23 @@ const InfoIcon = styled.span`
   align-items: center;
   flex-shrink: 0;
   margin-left: 20px;
+  cursor: pointer;
+  &:hover {
+    background: #a0a0a0;
+  }
+`;
+
+const HoverImageContainer = styled.div`
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-10%);
+  padding: 4px;
+  z-index: 9999;
+`;
+
+const HoverImage = styled.img`
+  width: 37.57vw;
 `;
 
 const EditBtn = styled.span`

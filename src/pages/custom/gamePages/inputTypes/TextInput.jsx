@@ -7,6 +7,7 @@ const TextInput = ({ inputs, setInputs, onSave, gameType }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({}); // { [id]: true }
   const inputRefs = useRef({});
+  const [showInfo, setShowInfo] = useState(false);
 
   const handleDelete = (idx) => {
     setInputs((prev) => prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, id: i + 1 })));
@@ -72,7 +73,26 @@ const TextInput = ({ inputs, setInputs, onSave, gameType }) => {
     <InputContainer>
       <InputTopRow>
         <GameTypeBadge>{gameType || '텍스트입력'}</GameTypeBadge>
-        <InfoIcon>i</InfoIcon>
+        <InfoWrapper
+          onMouseEnter={() => setShowInfo(true)}
+          onMouseLeave={() => setShowInfo(false)}
+        >
+          <InfoIcon>i</InfoIcon>
+          {showInfo && (
+            <HoverImageContainer>
+              <HoverImage src={
+                gameType === '단어텔레파시'
+                  ? '/images/hover_tele.png'
+                  : gameType === '디스코'
+                    ? '/images/hover_disco.png'
+                    : gameType === '액션초성게임'
+                      ? '/images/hover_action.png'
+                      : '/images/hover_telestration.png'
+              }
+                alt="info" />
+            </HoverImageContainer>
+          )}
+        </InfoWrapper>
         <EditBtn onClick={() => setIsEditing((v) => !v)}>{isEditing ? '완료' : '편집'}</EditBtn>
       </InputTopRow>
       <InputBoxesScrollArea>
@@ -255,6 +275,14 @@ const GameTypeBadge = styled.span`
   box-sizing: border-box;
 `;
 
+const InfoWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 20px;
+`;
+
+
 const InfoIcon = styled.span`
   color: #dadadb;
   font-family: DungGeunMo;
@@ -270,6 +298,23 @@ const InfoIcon = styled.span`
   align-items: center;
   flex-shrink: 0;
   margin-left: 20px;
+  cursor: pointer;
+  &:hover {
+    background: #a0a0a0;
+  }
+`;
+
+const HoverImageContainer = styled.div`
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-10%);
+  padding: 4px;
+  z-index: 9999;
+`;
+
+const HoverImage = styled.img`
+  width: 37.57vw;
 `;
 
 const EditBtn = styled.span`
