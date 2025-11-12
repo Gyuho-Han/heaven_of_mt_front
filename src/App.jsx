@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import Splash from "./pages/Splash";
 import RandomHome from "./pages/random/RandomHome";
@@ -35,6 +35,9 @@ import { AuthProvider, useAuth } from "./GoogleAuthManager";
 import PrivateRoute from "./PrivateRoute";
 
 function AppContent() {
+  const location = useLocation();
+  const state = location.state || {};
+  const backgroundLocation = state.backgroundLocation;
   const { user } = useAuth();
 
   useEffect(() => {
@@ -76,7 +79,8 @@ function AppContent() {
   return (
     <>
       <GoogleAnalyticsManager />
-      <Routes>
+      {/* Main routes; if modal background exists, render underlying page */}
+      <Routes location={backgroundLocation || location}>
         <Route path="/" element={<Splash />} />
         <Route path="/mode" element={<SelectModePage />} />
         <Route path="/random_home" element={<RandomHome />} />
@@ -286,6 +290,174 @@ function AppContent() {
         />
         <Route path="/gameover" element={<GameOver />} />
       </Routes>
+      {/* Modal overlay for previews: render game routes on top when backgroundLocation exists */}
+      {backgroundLocation && (
+        <ModalOverlay>
+          <Routes>
+            {/* custom game routes duplicated for modal rendering */}
+            <Route
+              path="/custom/person"
+              element={
+                <PrivateRoute>
+                  <CustomPersonGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/person/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomPersonGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/disco"
+              element={
+                <PrivateRoute>
+                  <CustomDiscoGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/disco/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomDiscoGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/captain"
+              element={
+                <PrivateRoute>
+                  <CustomCaptainGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/captain/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomCaptainGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/four"
+              element={
+                <PrivateRoute>
+                  <CustomFourGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/four/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomFourGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/tele"
+              element={
+                <PrivateRoute>
+                  <CustomTeleGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/tele/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomTeleGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/telestration"
+              element={
+                <PrivateRoute>
+                  <CustomTelestrationGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/telestration/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomTelestrationGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/choi"
+              element={
+                <PrivateRoute>
+                  <CustomChoiGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/choi/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomChoiGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/category"
+              element={
+                <PrivateRoute>
+                  <CustomCategoryPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/category/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomCategoryPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/musictitle"
+              element={
+                <PrivateRoute>
+                  <CustomMusicTitleGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/musictitle/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomMusicTitleGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/movie"
+              element={
+                <PrivateRoute>
+                  <CustomMovieGamePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/custom/movie/:gameId"
+              element={
+                <PrivateRoute>
+                  <CustomMovieGamePage />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </ModalOverlay>
+      )}
     </>
   );
 }
@@ -301,3 +473,37 @@ function App() {
 }
 
 export default App;
+
+// very small modal overlay for preview rendering
+function ModalOverlay({ children }) {
+  const navigate = useNavigate();
+  return (
+    <div
+      onClick={() => navigate(-1)}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(23, 23, 23, 0.85)',
+        display: 'flex',
+        alignItems: 'stretch',
+        justifyContent: 'stretch',
+        zIndex: 9999,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'transparent',
+          position: 'relative',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}

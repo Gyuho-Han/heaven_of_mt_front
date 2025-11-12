@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../GoogleAuthManager";
 import { createGame, deleteGame } from "../../firebase/Games";
 import {
@@ -16,9 +16,11 @@ import TextTextInput from "./gamePages/inputTypes/TextTextInput";
 import FourLetterInput from "./gamePages/inputTypes/FourLetterInput";
 import VerticalTextText from "./gamePages/inputTypes/VerticalTextText";
 import AddFirstGamePage from "./AddFirstGamePage";
+import { gameData } from "../../gameData";
 
 const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [showPicker, setShowPicker] = useState(false);
   const [pickerPos, setPickerPos] = useState({ top: 0, left: 0 });
@@ -69,6 +71,19 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
     navigate(`/customhome/gamestart/${projectId}`);
   };
 
+  const handlePreviewClick = () => {
+    if (!hasMeaningfulForSelected) return;
+    const game = selectedGame || games[0];
+    if (!game) return;
+    // Map selected type to route
+    const normalizedName = selectedType;
+    const desc = (gameData || []).find((d) => d.name === normalizedName);
+    if (!desc) return;
+    const base = normalizedName === "노래초성퀴즈" ? "/custom/musictitle" : `/custom${desc.route}`;
+    const path = game.id ? `${base}/${game.id}` : base;
+    navigate(path, { state: { backgroundLocation: location, fromPreview: true } });
+  };
+
   // inputs 상태는 이 페이지에서 관리하고, 조작 함수는 하위 컴포넌트로 전달해 사용합니다.
 
   const defaultInputsForType = (type) => {
@@ -94,6 +109,33 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
   const currentImages = selectedGameId
     ? imagesByGame[selectedGameId] ?? {}
     : {};
+
+  // Determine if selected game has at least one meaningful question
+  const hasMeaningfulForSelected = (() => {
+    const items = currentInputs || [];
+    if (!items.length) return false;
+    if (selectedType === "인물퀴즈") {
+      return items.some((it) => {
+        const img = currentImages?.[it.id];
+        const hasImg = !!(img?.file || img?.previewUrl);
+        const hasAns = !!String(it.value || "").trim();
+        return hasImg || hasAns;
+      });
+    }
+    if (selectedType === "명대사퀴즈" || selectedType === "명대사 퀴즈") {
+      const withText = items.some((it) => !!String(it.value || "").trim());
+      if (withText) return true;
+      return Object.values(currentImages || {}).some((img) => !!(img?.file || img?.previewUrl));
+    }
+    if (selectedType === "노래초성퀴즈") {
+      return items.some((it) => !!String(it.title || it.artist || "").trim());
+    }
+    if (selectedType === "대표게임") {
+      return items.some((it) => !!String(it.description || it.mission || "").trim());
+    }
+    // other single-text types
+    return items.some((it) => !!String(it.value || "").trim());
+  })();
 
   const setInputsForSelected = (next) => {
     if (!selectedGameId) return;
@@ -298,7 +340,7 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
           <ProjectName>{projectTitle || '프로젝트'}</ProjectName>
         </HeaderLeft>
         <HeaderRight>
-          <PreviewBtn>미리보기</PreviewBtn>
+          <PreviewBtn onClick={handlePreviewClick} $disabled={!hasMeaningfulForSelected} aria-disabled={!hasMeaningfulForSelected}>미리보기</PreviewBtn>
           <PlayBtn onClick={handlePlayClick}>게임하기</PlayBtn>
           <Profile />
         </HeaderRight>
@@ -637,7 +679,9 @@ const PreviewBtn = styled.span`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  cursor: pointer;
+  cursor: ${(p) => (p.$disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${(p) => (p.$disabled ? 0.4 : 1)};
+  pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
 `;
 
 const PlayBtn = styled.span`
