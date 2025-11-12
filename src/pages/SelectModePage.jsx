@@ -100,7 +100,7 @@ const LoginPopUp = ({ onClose, onGoogleLogin }) => {
         <PopUpContent>로그인이 필요해요</PopUpContent>
 
         <GoogleLoginButton onClick={handleGoogleLogin}>
-          <GoogleImage src="/googlelogo.png" />
+          <GoogleImage src="/images/googlelogo.png" />
           <GoogleText>구글 로그인</GoogleText>
         </GoogleLoginButton>
         <br />
