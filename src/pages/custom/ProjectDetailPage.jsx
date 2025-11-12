@@ -64,7 +64,11 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPicker]);
 
-  
+  const handlePlayClick = () => {
+    // hardcoded project id for testing as requested
+    const projectId = "uaKEmzWPK6ZNhWGNgm9s";
+    navigate(`/customhome/gamestart/${projectId}`);
+  };
 
   // inputs 상태는 이 페이지에서 관리하고, 조작 함수는 하위 컴포넌트로 전달해 사용합니다.
 
@@ -288,7 +292,7 @@ const ProjectDetailPage = ({ games = [], projectId, projectTitle, onGameCreated 
         </HeaderLeft>
         <HeaderRight>
           <PreviewBtn>미리보기</PreviewBtn>
-          <PlayBtn>게임하기</PlayBtn>
+          <PlayBtn onClick={handlePlayClick}>게임하기</PlayBtn>
           <Profile />
         </HeaderRight>
       </Header>

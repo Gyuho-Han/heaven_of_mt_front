@@ -1,18 +1,25 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { personData } from '../../gameData';
-import ReadyPage from './ReadyPage';
+import { personData } from '../../../gameData';
+import ReadyPage from './CustomReadyPage';
+import { readQuestions } from '../../../firebase/Questions';
 
-const PersonGamePage = () => {
+const CustomPersonGamePage = () => {
   const [cards, setCards] = useState([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const navigate = useNavigate();
+  const { gameId } = useParams();
   const focusRef = useRef(null);
+  const goToCustomGameOver = useCallback(() => {
+    navigate('/custom/gameover', {
+      state: { gameName: 'person', gameId },
+    });
+  }, [navigate, gameId]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,14 +29,60 @@ const PersonGamePage = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Shuffle and pick 10 cards
-    const shuffled = [...personData].sort(() => 0.5 - Math.random());
-    setCards(shuffled.slice(0, 10));
-
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const buildFallbackCards = () =>
+      [...personData]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 10)
+        .map((item, idx) => ({
+          id: item.id || `fallback-person-${idx}`,
+          imgUrl: item.name,
+          answer: item.answer,
+        }));
+
+    const loadQuestions = async () => {
+      if (!gameId) {
+        if (mounted) setCards(buildFallbackCards());
+        return;
+      }
+
+      try {
+        const questions = await readQuestions(gameId);
+        const formatted = questions
+          .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
+          .map((question, idx) => {
+            const imageSource =
+              (question.imgUrl && question.imgUrl.trim()) ||
+              (question.questionText && question.questionText.trim()) ||
+              '';
+            return {
+              id: question.id || `person-${idx}`,
+              imgUrl: imageSource,
+              answer: question.answer?.trim() || '',
+            };
+          })
+          .filter((item) => item.imgUrl.length > 0);
+
+        if (!formatted.length) throw new Error('커스텀 인물퀴즈 문제가 없습니다.');
+        if (mounted) setCards(formatted);
+      } catch (error) {
+        console.error('커스텀 인물퀴즈 문제 불러오기 실패:', error);
+        if (mounted) setCards(buildFallbackCards());
+      }
+    };
+
+    loadQuestions();
+    return () => {
+      mounted = false;
+    };
+  }, [gameId]);
 
   useEffect(() => {
     focusRef.current?.focus();
@@ -53,10 +106,10 @@ const PersonGamePage = () => {
         setCurrentCardIndex((prev) => prev + 1);
         setIsAnswered(false);
       } else {
-        navigate('/gameover', { state: { gameName: 'person' } });
+        goToCustomGameOver();
       }
     }
-  }, [currentCardIndex, cards.length, navigate]);
+  }, [currentCardIndex, cards.length, goToCustomGameOver]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -67,12 +120,12 @@ const PersonGamePage = () => {
   useEffect(() => {
     const toPrefetch = [currentCardIndex + 1, currentCardIndex + 2]
       .map((i) => cards[i])
-      .filter((c) => c && c.name);
+      .filter((c) => c && (c.imgUrl || c.name));
 
     toPrefetch.forEach((c) => {
       const img = new Image();
       img.decoding = 'async';
-      img.src = c.name;
+      img.src = c.imgUrl || c.name;
     });
   }, [cards, currentCardIndex]);
 
@@ -81,7 +134,7 @@ const PersonGamePage = () => {
       setCurrentCardIndex((prev) => prev + 1);
       setIsAnswered(false);
     } else {
-      navigate('/gameover', { state: { gameName: 'person' } });
+      goToCustomGameOver();
     }
   };
 
@@ -117,7 +170,7 @@ const PersonGamePage = () => {
         </NavButton>
         <CardContainer>
           <Card
-            src={cards[currentCardIndex].name}
+            src={cards[currentCardIndex].imgUrl || cards[currentCardIndex].name}
             alt="person"
             decoding="async"
             fetchpriority="high"
@@ -142,7 +195,7 @@ const PersonGamePage = () => {
   );
 };
 
-export default PersonGamePage;
+export default CustomPersonGamePage;
 
 const Container = styled.div`
   background-image: url('/images/background_final.png');

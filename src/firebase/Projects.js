@@ -3,6 +3,7 @@ import {
     collection,
     doc,
     addDoc,
+    getDoc,
     getDocs,
     updateDoc,
     query,
@@ -39,6 +40,15 @@ export async function readProjects(userId) {
         id: doc.id,
         ...doc.data()
     }));
+}
+
+export async function readProject(id) {
+    const snapshot = await getDoc(doc(db, COLLECTION, id));
+    if (!snapshot.exists()) return null;
+    return {
+        id: snapshot.id,
+        ...snapshot.data(),
+    };
 }
 
 
