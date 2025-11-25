@@ -9,6 +9,7 @@ import styled from 'styled-components';
 const ProjectCreateModal = ({ open, onClose, onCreate }) => {
   const [name, setName] = useState('');
   const [error, setError] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -20,12 +21,18 @@ const ProjectCreateModal = ({ open, onClose, onCreate }) => {
   if (!open) return null;
 
   const handleCreate = async () => {
+    if (submitting) return; // guard against double submit
     const trimmed = name.trim();
     if (!trimmed) {
       setError(true);
       return;
     }
-    await onCreate?.(trimmed);
+    try {
+      setSubmitting(true);
+      await onCreate?.(trimmed);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -34,29 +41,23 @@ const ProjectCreateModal = ({ open, onClose, onCreate }) => {
         <CloseButton onClick={onClose}>×</CloseButton>
         <ModalTitle>새로운 프로젝트 만들기</ModalTitle>
         <ModalLabel>프로젝트 이름</ModalLabel>
-        <ModalInput
-          type="text"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-            if (error && e.target.value.trim()) setError(false);
-          }}
-          onKeyDown={async (e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              await handleCreate();
-            }
-          }}
-          placeholder="새로운 프로젝트 명"
-          $error={error}
-        />
-        <ModalActions>
-          <CreateBtn
-            onClick={handleCreate}
-          >
-            만들기
-          </CreateBtn>
-        </ModalActions>
+        <form onSubmit={(e) => { e.preventDefault(); handleCreate(); }}>
+          <ModalInput
+            type="text"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (error && e.target.value.trim()) setError(false);
+            }}
+            placeholder="새로운 프로젝트 명"
+            $error={error}
+          />
+          <ModalActions>
+            <CreateBtn type="submit" disabled={submitting}>
+              만들기
+            </CreateBtn>
+          </ModalActions>
+        </form>
       </ModalBox>
     </ModalOverlay>
   );
