@@ -8,6 +8,7 @@ import { readProjects } from "../../firebase/Projects";
 import { createProject, updateProject, deleteProject } from "../../firebase/Projects";
 import { readGamesInProject, readGame } from "../../firebase/Games";
 import ProjectCreateModal from "../../components/ProjectCreateModal";
+import ConfirmModal from "../../components/ConfirmModal";
 
 const CustomHome = () => {
   const { user } = useAuth();
@@ -21,6 +22,8 @@ const CustomHome = () => {
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [editingId, setEditingId] = useState(null);
   const [editingValue, setEditingValue] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -92,13 +95,31 @@ const CustomHome = () => {
     }
   };
 
-  const removeProject = async (id) => {
+  const removeProject = (id) => {
+    setDeleteTargetId(id);
+    setConfirmOpen(true);
+  };
+
+  const performDeleteProject = async () => {
+    const id = deleteTargetId;
+    if (!id) {
+      setConfirmOpen(false);
+      return;
+    }
     await deleteProject(id);
     if (user) {
       const list = await readProjects(user.uid);
       const sorted = sortProjects(list);
       setProjects(sorted);
+      // If the deleted project was selected, reset selection to first if available
+      if (selectedProjectId === id) {
+        const next = sorted[0]?.id || null;
+        setSelectedProjectId(next);
+        setShowCards(sorted.length > 0);
+      }
     }
+    setDeleteTargetId(null);
+    setConfirmOpen(false);
   };
 
   const sortProjects = (arr) => {
@@ -173,7 +194,7 @@ const CustomHome = () => {
                       <MenuIcon src="/images/ChangeNameIcon.svg" alt="change-name" />
                       이름 변경
                     </MenuItem>
-                    <MenuItem danger onClick={() => removeProject(project.id)}>
+                    <MenuItem danger onClick={() => { setOpenMenuId(null); removeProject(project.id); }}>
                       <MenuIcon src="/images/DeleteIcon.svg" alt="delete" />
                       삭제
                     </MenuItem>
@@ -226,6 +247,13 @@ const CustomHome = () => {
             await createProjectModal(name);
             setIsModalOpen(false);
           }}
+        />
+
+        <ConfirmModal
+          open={confirmOpen}
+          message="프로젝트를 삭제하시겠습니까?"
+          onCancel={() => { setConfirmOpen(false); setDeleteTargetId(null); }}
+          onConfirm={performDeleteProject}
         />
       </Contents>
     </Container>
