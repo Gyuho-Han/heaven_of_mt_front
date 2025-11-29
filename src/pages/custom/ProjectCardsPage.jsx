@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-const ProjectCardsPage = ({ projects = [], onAddProject, onRename, onDelete, onSelectProject }) => {
+const ProjectCardsPage = ({
+  projects = [],
+  onAddProject,
+  onRename,
+  onDelete,
+  onSelectProject,
+}) => {
   const navigate = useNavigate();
   const [openMenuId, setOpenMenuId] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -39,18 +45,20 @@ const ProjectCardsPage = ({ projects = [], onAddProject, onRename, onDelete, onS
                       value={editingValue}
                       onChange={(e) => setEditingValue(e.target.value)}
                       onKeyDown={async (e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           const name = editingValue.trim();
                           if (name) await onRename?.(p.id, name);
                           setEditingId(null);
-                        } else if (e.key === 'Escape') {
+                        } else if (e.key === "Escape") {
                           setEditingId(null);
                         }
                       }}
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <ProjectName title={p.title || p.name}>{p.title || p.name}</ProjectName>
+                    <ProjectName title={p.title || p.name}>
+                      {p.title || p.name}
+                    </ProjectName>
                   )}
                   <EllipsisWrapper>
                     <EllipsisButton
@@ -76,7 +84,13 @@ const ProjectCardsPage = ({ projects = [], onAddProject, onRename, onDelete, onS
                           />
                           이름 변경
                         </MenuItem>
-                        <MenuItem danger onClick={() => onDelete?.(p.id)}>
+                        <MenuItem
+                          danger
+                          onClick={() => {
+                            setOpenMenuId(null);
+                            onDelete?.(p.id);
+                          }}
+                        >
                           <MenuIcon src="/images/DeleteIcon.svg" alt="delete" />
                           삭제
                         </MenuItem>
@@ -288,6 +302,7 @@ const MenuIcon = styled.img`
 
 const CardFooter = styled.div`
   height: 5.22vh;
+  max-height: 50px;
   width: 100%;
   flex-shrink: 0;
   border-radius: 0 0 5px 5px;
