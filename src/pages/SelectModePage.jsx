@@ -351,7 +351,7 @@ const PopUpContent = styled.p`
 
 const KakaoLoginButton = styled.button`
   position: relative;
-  background-color: #FEE500; /* 카카오 공식 노란색 */
+  background-color: #FEE500; 
   width: 27.3vw;
   height: 3.7vw;
   border: 1px solid #d9d9d9;
@@ -363,7 +363,7 @@ const KakaoLoginButton = styled.button`
   font-family: DungGeunMo;
   margin-top: 15px;   
   &:hover {
-    background: #FDD835; /* 호버 시 약간 진하게 */
+    background: #FDD835;
   }
 `;
 
