@@ -10,7 +10,7 @@ const SelectModePage = () => {
   const navigate = useNavigate();
   const focusRef = useRef(null);
 
-  const { user, googleSignIn } = useAuth();
+  const { user, googleSignIn, kakaoSignIn } = useAuth();
   const [isPopUpShow, setisPopUpShow] = useState(false);
 
   useEffect(() => {
@@ -75,6 +75,7 @@ const SelectModePage = () => {
           <LoginPopUp
             onClose={() => setisPopUpShow(false)}
             onGoogleLogin={googleSignIn}
+            onKakaoLogin={kakaoSignIn}
           />
         )}
       </Content>
@@ -82,12 +83,21 @@ const SelectModePage = () => {
   );
 };
 
-const LoginPopUp = ({ onClose, onGoogleLogin }) => {
+const LoginPopUp = ({ onClose, onGoogleLogin, onKakaoLogin }) => {
+
   const handleGoogleLogin = async () => {
     try {
       await onGoogleLogin();
     } catch (error) {
       console.error("faild to gogle login:", error);
+    }
+  };
+
+  const handleKakaoLogin = async () => {
+    try {
+      await onKakaoLogin();
+    } catch (error) {
+      console.error("failed to kakao login:", error);
     }
   };
 
@@ -103,6 +113,10 @@ const LoginPopUp = ({ onClose, onGoogleLogin }) => {
           <GoogleImage src="/images/googlelogo.png" />
           <GoogleText>구글 로그인</GoogleText>
         </GoogleLoginButton>
+        <KakaoLoginButton onClick={handleKakaoLogin}>
+          <KakaoImage src="/images/kakaologo.png" />
+          <KakaoText>카카오 로그인</KakaoText>
+        </KakaoLoginButton>
         <br />
       </PopUpContainer>
     </PopUpOverlay>
@@ -333,4 +347,35 @@ const PopUpContent = styled.p`
   font-weight: 400;
   color: #595959;
   margin: 0px;
+`;
+
+const KakaoLoginButton = styled.button`
+  position: relative;
+  background-color: #FEE500; /* 카카오 공식 노란색 */
+  width: 27.3vw;
+  height: 3.7vw;
+  border: 1px solid #d9d9d9;
+  border-radius: 3.88px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-family: DungGeunMo;
+  margin-top: 15px;   
+  &:hover {
+    background: #FDD835; /* 호버 시 약간 진하게 */
+  }
+`;
+
+const KakaoImage = styled.img`
+  width: 22.9px;
+  height: 22.9px;
+  position: absolute;
+  left: 20px;
+`;
+
+const KakaoText = styled.span`
+  font-size: 16px;
+  font-weight: 400;
+  color: #444444;
 `;
