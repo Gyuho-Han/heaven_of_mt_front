@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { GoogleAuthProvider, OAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { authService } from './firebase/FirebaseConfig';
 import { createUser } from './firebase/Users';
 
@@ -13,27 +13,38 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const handleLogin = async (result) => {
+        if (!result || !result.user) {
+            console.error("ERROR: user가 없음");
+            return;
+        }
+
+        const user = result.user;
+
+        await createUser({
+            id: user.uid,
+            email: user.email,
+            username: user.displayName || "닉네임을 설정해주세요",
+        });
+    };
+
     const googleSignIn = async () => {
         try {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(authService, provider);
-
-            if (!result || !result.user) {
-                console.error("ERROR: user가 없음");
-                return;
-            }
-
-            const user = result.user;
-
-            await createUser({
-                id: user.uid,
-                email: user.email,
-                username: user.displayName || "",
-            });
-
+            await handleLogin(result);
         } catch (err) {
-            // 나중에 페이지나 팝업으로 바꾸기
             console.error("Google login failed:", err);
+        }
+    };
+
+    const kakaoSignIn = async () => {
+        try {
+            const provider = new OAuthProvider('oidc.kakao');
+            const result = await signInWithPopup(authService, provider);
+            await handleLogin(result);
+        } catch (err) {
+            console.error("Kakao login failed:", err);
         }
     };
 
@@ -43,6 +54,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         googleSignIn,
+        kakaoSignIn,
         logout
     };
 
