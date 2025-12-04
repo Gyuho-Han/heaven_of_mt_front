@@ -63,7 +63,7 @@ const RandomHome = () => {
             onMouseEnter={() => setIsHovering2(true)}
             onMouseLeave={() => setIsHovering2(false)}
             $isHovering={isHovering2}
-            href="https://hguhimin.notion.site/db18a79dd2bd45208f55b1ca515647b8"
+            href="https://hguhimin.notion.site/2be16539629580a6bcf6cc31735cc491"
             target="_blank"
             rel="noopener noreferrer"
           >
